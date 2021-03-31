@@ -32,6 +32,7 @@ def pedido_mapper(pedido):
     'disponibilidade': disponibilidade,
     'prazo_envio': str(add_util_days(pedido['data_leitura'], disponibilidade)),
     'prazo_frete': envio['prazo'],
+    'estado': pedido['endereco_entrega']['estado'],
 
     'subtotal': to_money(pedido['valor_subtotal']),
     'desconto': to_money(pedido['valor_desconto']),
