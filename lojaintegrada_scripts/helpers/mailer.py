@@ -15,8 +15,8 @@ def send(email_to, subject, body='', files_to_send=tuple()):
   msg.attach(MIMEText(body, _subtype='plain'))
 
   for file_hash in files_to_send:
-    with open(file_hash['file']) as fp:
-      attachment = MIMEText(fp.read(), _subtype='csv')
+    with open(file_hash['file'], encoding='utf-8') as fp:
+      attachment = MIMEText(fp.read(), _subtype='csv', _charset='utf-8')
 
     attachment.add_header("Content-Disposition", "attachment", filename=f"{file_hash['name']}.csv")
     msg.attach(attachment)

@@ -19,8 +19,8 @@ def to_csv(data:list[dict]):
   # valor_custo = 0
   # valor_lucro = 0
 
-  with open(file_path, 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile, dialect='excel')
+  with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+    writer = csv.writer(csvfile, dialect='excel', delimiter=',')
     writer.writerow(headers)
 
     for d in data:

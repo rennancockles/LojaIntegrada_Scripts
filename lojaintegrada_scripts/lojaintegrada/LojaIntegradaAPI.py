@@ -27,7 +27,7 @@ class LojaIntegradaAPI:
                             timeout=50)
 
     if response.ok:
-        return response.json()
+      return response.json()
     else:
       raise ResponseError(response)
 
