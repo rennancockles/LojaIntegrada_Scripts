@@ -1,0 +1,1 @@
+from lojaintegrada import LojaIntegrada
