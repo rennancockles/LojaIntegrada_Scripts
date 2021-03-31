@@ -1,0 +1,1 @@
+from .LojaIntegrada import LojaIntegrada
