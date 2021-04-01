@@ -7,6 +7,41 @@ import xmltodict
 class PagSeguro:
   _base_url = 'https://ws.pagseguro.uol.com.br'
 
+  STATUS = (
+    (1, 'Aguardando pagamento'),
+    (2, 'Em análise'),
+    (3, 'Aprovado'),
+    (4, 'Disponível'),
+    (5, 'Em disputa'),
+    (6, 'Devolvido'),
+    (7, 'Cancelado'),
+    (8, 'Debitado'),
+    (9, 'Retenção Temporária')
+  )
+
+  TIPO_PAGAMENTO = (
+    (1, 'Crédito'),
+    (2, 'Boleto'),
+    (3, 'Débito online'),
+    (4, 'Saldo PagSeguro'),
+    (5, 'Oi paggo'),
+    (6, ''),
+    (7, 'Depósito em conta')
+  )
+
+  COD_PAGAMENTO = (
+    (101, 'Visa'), (102, 'MasterCard'), (103, 'American Express'), (104, 'Diners'), (105, 'Hipercard'),
+    (106, 'Aura'), (107, 'Elo'), (108, 'PLENOCard'), (109, 'PersonalCard'), (110, 'JCB'),
+    (111, 'Discover'), (112, 'BrasilCard'), (113, 'FORTBRASIL'), (114, 'CARDBAN'), (115, 'VALECARD'),
+    (116, 'Cabal'), (117, 'Mais!'), (118, 'Avista'), (119, 'GRANDCARD'), (120, 'Sorocred'),
+    (201, 'Bradesco'), (202, 'Santander'), (203, 'Nubank'),
+    (301, 'Bradesco'), (302, 'Itaú'), (303, 'Unibanco'), (304, 'Banco do Brasil'), (305, 'Banco Real'),
+    (306, 'Banrisul'), (307, 'HSBC'),
+    (401, 'Saldo PagSeguro'),
+    (501, 'Oi paggo'),
+    (701, 'Banco do Brasil'), (702, 'HSBC'), (703, 'Itaú'), (704, 'Caixa')
+  )
+
   def __init__(self, email:str, token:str):
     self.base_params = {
       'email': email,
@@ -42,7 +77,7 @@ class PagSeguro:
 
   def _testa_sessao(self):
     response = self._execute_post('/v2/sessions')
-    if not response or type(response['session']['id'] != str):
+    if not response or type(response['session']['id']) != str:
       raise InvalidCredentialError()
 
   def consulta_detalhe_transacao(self, codigo_transacao):
