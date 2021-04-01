@@ -31,7 +31,7 @@ def pedido_mapper(pedido):
     'envio': f"{envio['forma_envio']['nome']} - {envio['forma_envio']['tipo']}",
     'disponibilidade': disponibilidade,
     'prazo_envio': str(add_util_days(pedido['data_leitura'], disponibilidade)),
-    'prazo_frete': envio['prazo'],
+    'prazo_frete': int(envio['prazo']) - disponibilidade,
     'estado': pedido['endereco_entrega']['estado'],
 
     'subtotal': to_money(pedido['valor_subtotal']),
