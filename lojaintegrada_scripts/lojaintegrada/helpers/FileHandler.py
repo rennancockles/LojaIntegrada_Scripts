@@ -44,7 +44,7 @@ class FileHandler:
       _, file_date_i, file_date_f, _ = self.split_filename(file_)
 
       if file_date_i <= date_i and file_date_f >= date_f:
-        logger.debug(f'arquivo encontrado: {file_}')
+        logger.info(f'arquivo encontrado: {file_}')
         return os.path.join(self.base_directory, file_)
   
   def import_file(self, filename:str):
@@ -53,7 +53,7 @@ class FileHandler:
 
     file_path = self._find_import_file(filename)
 
-    if os.path.exists(file_path):
+    if file_path and os.path.exists(file_path):
       with open(file_path, "rb") as file_:
         logger.debug(f'importando dados de {filename}')
         return pickle.load(file_)
