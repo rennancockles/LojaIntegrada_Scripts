@@ -24,7 +24,7 @@ class FileHandler:
     date_f = datetime.strptime(date_f, '%Y-%m-%d').date()
     return filename, date_i, date_f, extension
   
-  def export(self, filename:str, dados:dict):
+  def export_file(self, filename:str, dados:dict):
     if not filename.endswith(self.extension):
       filename += self.extension
     
@@ -47,7 +47,7 @@ class FileHandler:
         logger.debug(f'arquivo encontrado: {file_}')
         return os.path.join(self.base_directory, file_)
   
-  def import(self, filename:str):
+  def import_file(self, filename:str):
     if not filename.endswith(self.extension):
       filename += self.extension
 
