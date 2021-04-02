@@ -41,12 +41,12 @@ def validate_args(args):
   try:
     datas = date_range(*datas)
   except:
-    exit(1, "Data no formato inválido: a data deve estar no formato %d/%m/%Y\n")
+    exit("Data no formato inválido: a data deve estar no formato %d/%m/%Y\n")
 
   try:
     ScriptClass = getattr(scripts, args.script)
   except:
-    exit(1, f"Script não encontrado: {args.script}\n")
+    exit(f"Script não encontrado: {args.script}\n")
 
   return ScriptClass, datas
 
