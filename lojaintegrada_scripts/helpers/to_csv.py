@@ -4,7 +4,7 @@ from os import path
 CWD = path.dirname(path.abspath(__file__))
 
 def to_csv(data:list[dict]):
-  if not list:
+  if not data:
     return
 
   keys = data[0].keys()
