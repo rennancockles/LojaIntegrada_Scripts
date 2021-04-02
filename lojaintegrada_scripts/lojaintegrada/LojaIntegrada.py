@@ -11,6 +11,7 @@ from datetime import date
 logger = logging.getLogger(__name__)
 CWD = os.path.dirname(os.path.abspath(__file__))
 DATA_DIRECTORY = os.path.join(CWD, 'dados')
+MIN_DAYS_TO_EXPORT = 7
 
 
 class LojaIntegrada(LojaIntegradaAPI):
@@ -126,6 +127,7 @@ class LojaIntegrada(LojaIntegradaAPI):
     logger.debug(f'{len(dados)} dados obtidos')
     dados_filtrados = self._filtra_response_por_datas(dados, datas)
 
-    self.fileHandler.export_file(filename, dados_filtrados)
+    if (data_f - data_i).days >= MIN_DAYS_TO_EXPORT:
+      self.fileHandler.export_file(filename, dados_filtrados)
 
     return dados_filtrados
