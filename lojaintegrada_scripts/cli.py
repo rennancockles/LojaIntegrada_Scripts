@@ -53,7 +53,7 @@ def validate_args(args):
 def main():
   args = parse_args()
   
-  logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=args.log.upper())
+  logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%d/%m/%Y %H:%M', level=args.log.upper())
   logger = logging.getLogger(__name__)
   logger.debug(args)
 
