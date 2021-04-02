@@ -11,6 +11,7 @@ from lojaintegrada import LojaIntegrada
 from helpers import date_range
 
 load_dotenv()
+logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
 api_key = os.getenv("API_KEY")
 app_key = os.getenv("APP_KEY")
@@ -53,7 +54,7 @@ def validate_args(args):
 def main():
   args = parse_args()
   
-  logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%d/%m/%Y %H:%M', level=args.log.upper())
+  logging.basicConfig(format='%(asctime)s - %(levelname)-8s - %(name)s - %(message)s', datefmt='%d/%m/%Y %H:%M', level=args.log.upper())
   logger = logging.getLogger(__name__)
   logger.debug(args)
 
