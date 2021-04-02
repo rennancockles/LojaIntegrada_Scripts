@@ -4,9 +4,9 @@ import argparse
 import os
 import logging
 from datetime import datetime
-from importlib import import_module
 from dotenv import load_dotenv
 
+import scripts
 from lojaintegrada import LojaIntegrada
 from helpers import date_range
 
@@ -44,11 +44,11 @@ def validate_args(args):
     exit(1, "Data no formato inválido: a data deve estar no formato %d/%m/%Y\n")
 
   try:
-    script = import_module(f'scripts.{args.script}')
+    ScriptClass = getattr(scripts, args.script)
   except:
     exit(1, f"Script não encontrado: {args.script}\n")
 
-  return script, datas
+  return ScriptClass, datas
 
 
 def main():
@@ -58,7 +58,8 @@ def main():
   logger = logging.getLogger(__name__)
   logger.debug(args)
 
-  script, datas = validate_args(args)
+  ScriptClass, datas = validate_args(args)
 
   LI = LojaIntegrada(api_key=api_key, app_key=app_key)
-  script.main(LI, datas, email_to=args.mail_to)
+  script = ScriptClass(LI, datas, email_to=args.mail_to)
+  script()
