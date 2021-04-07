@@ -34,7 +34,8 @@ jobs:
           username: ${{secrets.SSH_USER}}
           
           script: |
-            mkdir test
-            cd test
-            git clone git@github.com:rennancockles/LojaIntegrada_Scripts.git
+            cd repos/LojaIntegrada_Scripts
+            git pull
+            . .venv/bin/activate
+            pip install requirements.txt
             echo 'Deployment succesful to digital ocean'
