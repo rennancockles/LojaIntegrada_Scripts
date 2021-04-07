@@ -38,17 +38,21 @@ class PedidosPagos:
   def get_pedidos(self, atualizacoes_pedidos_pagos, data:date):
     logger.info(f'{len(atualizacoes_pedidos_pagos)} pedidos pagos')
     pedidos = []
+    total = 0
 
     for atualizacao in atualizacoes_pedidos_pagos:
       pedido = self.ecommerceAPI.get_pedido_info(atualizacao['numero'])
+      total += float(pedido['valor_total']) 
       pedido['data_leitura'] = data
       pedido['detalhe_pagamento'] = {}
+      logger.debug(f"Pedido {pedido['numero']} => {to_money(pedido['valor_total'])}")
       
       if pedido['pagamentos'][0]['transacao_id']:
         pedido['detalhe_pagamento'] = self.pagseguro.consulta_detalhe_transacao(pedido['pagamentos'][0]['transacao_id'])
 
       pedidos.append(self.pedido_mapper(pedido))
     
+    logger.info(f"Total {to_money(total)}")
     return pedidos
 
   def pedido_mapper(self, pedido):
