@@ -3,7 +3,7 @@
 import argparse
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 import scripts
@@ -32,7 +32,7 @@ def parse_args():
 
 
 def validate_args(args):
-  datas = [datetime.today().strftime('%d/%m/%Y'), None]
+  datas = [(datetime.today() - timedelta(days=1)).strftime('%d/%m/%Y'), None]
   if args.range:
     datas = args.range
   elif args.data:
