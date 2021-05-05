@@ -3,6 +3,7 @@
 import logging
 from datetime import datetime
 from os import path
+from pathlib import Path
 
 from shopify import Shopify
 from helpers import to_money, month_names
@@ -42,6 +43,7 @@ class Declaracao:
 
     return {
       'store': self.ecommerceAPI.store,
+      'order_number': pedido['order_number'],
 
       'shp_name': shipping_address['name'],
       'shp_address1': shipping_address['address1'],
@@ -79,7 +81,9 @@ class Declaracao:
                 for line in dados['itm_lines']]
 
     declaracao = html.replace('@css', f'<style>{css}</style>') \
+                      .replace('@store_upper', dados['store'].upper()) \
                       .replace('@store', dados['store']) \
+                      .replace('@shp_name_upper', dados['shp_name'].upper()) \
                       .replace('@shp_name', dados['shp_name']) \
                       .replace('@shp_address1', dados['shp_address1']) \
                       .replace('@shp_address2', dados['shp_address2']) \
@@ -87,6 +91,7 @@ class Declaracao:
                       .replace('@shp_province', dados['shp_province']) \
                       .replace('@shp_zip', dados['shp_zip']) \
                       .replace('@shp_doc', dados['shp_doc']) \
+                      .replace('@shp_method', dados['shp_method']) \
                       .replace('@itm_line', '\n'.join(itm_lines)) \
                       .replace('@ord_qty', str(dados['ord_qty'])) \
                       .replace('@ord_value', dados['ord_value']) \
@@ -94,5 +99,5 @@ class Declaracao:
                       .replace('@month', dados['month']) \
                       .replace('@year', dados['year'])
 
-    with open(path.join(CWD, '../templates/final.html'), 'w', encoding='utf-8') as f:
+    with open(path.join(Path.home(), 'Desktop',f'{dados["order_number"]}_declaracao.html'), 'w', encoding='utf-8') as f:
       f.write(declaracao)

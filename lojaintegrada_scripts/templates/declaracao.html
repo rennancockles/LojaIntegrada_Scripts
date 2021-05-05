@@ -18,7 +18,55 @@
 <body class="clear-body">
   <div id="print-declaracao">
     <div class="container">
-      <div class="page-break">
+      <div class="page-break">        
+        <div class="row">
+          <div class="col-xs-6 remetente">
+            <div class="decl-borda etiqueta">
+              <div class="line title">
+                REMETENTE
+              </div>
+              <div class="line last">
+                <span>@store_upper</span>
+              </div>
+              <div class="line last">
+                Rua Aurora Silveira - 1000B - Cônego
+              </div>
+              <div class="line last">
+                Nova Friburgo - RJ
+              </div>
+              <div class="line last">
+                <span>CEP: 28621-220</span>
+              </div>
+              <div class="line last">
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-6 destinatario">
+            <div class="decl-borda etiqueta">
+              <div class="line title">
+                DESTINATÁRIO
+              </div>
+              <div class="line last">
+                <span>@shp_name_upper</span>
+              </div>
+              <div class="line last">
+                @shp_address1 - @shp_address2
+              </div>
+              <div class="line last">
+                @shp_city - @shp_province
+              </div>
+              <div class="line last">
+                <span>CEP: @shp_zip</span>
+              </div>
+              <div class="line last">
+                <span>Envio via: @shp_method</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <span class="linha-recorte"></span>
+
         <div class="row">
           <div class="col-xs-12">
             <div class="decl-titulo decl-borda">
@@ -175,10 +223,10 @@
     </div>
   </div>
   
-  <!-- <script>
+  <script>
     $(document).ready( function () {
       window.print()
     });
-  </script> -->
+  </script>
 </body>
 </html>

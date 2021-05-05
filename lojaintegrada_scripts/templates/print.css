@@ -4,6 +4,7 @@ body {
 body .container {
   width: 21cm;
   max-height: 28.7cm;
+  margin-top: 0.5cm;
 }
 #print-envio .cabecalho {
   overflow: hidden;
@@ -88,12 +89,21 @@ body .container {
   border: 2px solid #000;
   margin: 0.1cm;
 }
+#print-declaracao .decl-borda.etiqueta {
+  text-align: right;
+}
+.linha-recorte {
+  border-top: 3px dashed #DDD;
+  display: block;
+  clear: both;
+  margin-top: 0.8cm;
+}
 #print-declaracao .decl-titulo {
   text-align: center;
   font-size: 18pt;
   padding: 0.2cm 0;
   font-weight: 600;
-  margin-top: 1.2cm;
+  margin-top: 0.8cm;
 }
 #print-declaracao .remetente {
   padding-right: 0 !important;
