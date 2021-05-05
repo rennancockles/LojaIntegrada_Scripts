@@ -6,7 +6,7 @@ from datetime import datetime, date
 
 from lojaintegrada import LojaIntegrada
 from pagseguro import PagSeguro
-from helpers import add_util_days, to_money, to_csv, mailer
+from helpers import add_util_days, to_money, to_csv, is_pagseguro, is_mercadopago, mailer
 
 logger = logging.getLogger(__name__)
 
@@ -44,17 +44,25 @@ class PedidosPagos:
       pedido = self.ecommerceAPI.get_pedido_info(atualizacao['numero'])
       total += float(pedido['valor_total']) 
       pedido['data_leitura'] = data
-      pedido['detalhe_pagamento'] = {}
+      pedido['detalhe_pagamento'] = self.get_pagamento(pedido['pagamentos'][0])
       logger.debug(f"Pedido {pedido['numero']} => {to_money(pedido['valor_total'])}")
-      
-      if pedido['pagamentos'][0]['transacao_id']:
-        pedido['detalhe_pagamento'] = self.pagseguro.consulta_detalhe_transacao(pedido['pagamentos'][0]['transacao_id'])
-
       pedidos.append(self.pedido_mapper(pedido))
     
     logger.info(f"Total {to_money(total)}")
     return pedidos
 
+  def get_pagamento(self, dados_pagamento):
+    detalhe_pagamento = {}
+    if dados_pagamento['transacao_id']:
+      codigo = dados_pagamento['forma_pagamento']['codigo']
+      
+      if is_pagseguro(codigo):
+        detalhe_pagamento = self.pagseguro.consulta_detalhe_transacao(dados_pagamento['transacao_id'])
+      elif is_mercadopago(codigo):
+        pass
+
+    return detalhe_pagamento
+  
   def pedido_mapper(self, pedido):
     cliente = pedido['cliente']
     envio = pedido['envios'][0]
