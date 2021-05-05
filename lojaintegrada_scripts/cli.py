@@ -8,13 +8,17 @@ from dotenv import load_dotenv
 
 import scripts
 from lojaintegrada import LojaIntegrada
+from shopify import Shopify
 from helpers import date_range
 
 load_dotenv()
 logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
-api_key = os.getenv("API_KEY")
-app_key = os.getenv("APP_KEY")
+li_api_key = os.getenv("LI_API_KEY")
+li_app_key = os.getenv("LI_APP_KEY")
+shopify_api_key = os.getenv("SHOPIFY_API_KEY")
+shopify_password = os.getenv("SHOPIFY_PASSWORD")
+shopify_store = os.getenv("SHOPIFY_STORE")
 
 
 def parse_args():
@@ -23,6 +27,7 @@ def parse_args():
   parser.add_argument('--range', '-r', nargs=2, help='Range de datas no formado %d/%m/%Y')
   parser.add_argument('--script', '-s', help='Script para ser executado', required=True)
   parser.add_argument("--mail_to", '-m', nargs="+", help="Lista de destinatários para enviar email")
+  parser.add_argument("--pedido", '-p', help="Id do pedido")
 
   parser.add_argument("--log", '-l', help="Nível de verbosidade do log", 
                                      default='INFO', 
@@ -51,6 +56,19 @@ def validate_args(args):
   return ScriptClass, datas
 
 
+def script_orchestrator(scriptClass, datas, args):
+  script_name = args.script.lower()
+  LI = LojaIntegrada(api_key=li_api_key, app_key=li_app_key)
+  SHOPIFY = Shopify(api_key=shopify_api_key, password=shopify_password, store=shopify_store)
+
+  if script_name == 'declaracao':
+    script = scriptClass(SHOPIFY, args.pedido)
+  elif script_name == 'pedidospagos':
+    script = scriptClass(LI, datas, email_to=args.mail_to)
+
+  script()
+
+
 def main():
   args = parse_args()
   
@@ -60,6 +78,4 @@ def main():
 
   ScriptClass, datas = validate_args(args)
 
-  LI = LojaIntegrada(api_key=api_key, app_key=app_key)
-  script = ScriptClass(LI, datas, email_to=args.mail_to)
-  script()
+  script_orchestrator(ScriptClass, datas, args)
