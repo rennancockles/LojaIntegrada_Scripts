@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="clear-body">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=9">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="pt-br">
+  
+  <title>Declaração de Conteúdo</title>
+  
+  <link rel="stylesheet" href="https://cdn.awsli.com.br/production/static/bower_components/bootstrap/dist/css/bootstrap.min.css?v=5833a23" type="text/css">
+  
+  <script type="text/javascript" src="https://cdn.awsli.com.br/production/static/bower_components/jquery/dist/jquery.min.js?v=5833a23"></script>
+  <script type="text/javascript" src="https://cdn.awsli.com.br/production/static/bower_components/jquery-migrate/jquery-migrate.min.js?v=5833a23"></script>
+  
+  @css
+</head>
+
+<body class="clear-body">
+  <div id="print-declaracao">
+    <div class="container">
+      <div class="page-break">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="decl-titulo decl-borda">
+              DECLARAÇÃO DE CONTEÚDO
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-xs-6 remetente">
+            <div class="decl-borda">
+              <div class="line title">
+                REMETENTE
+              </div>
+              <div class="line">
+                <span>NOME:</span>
+                @store
+              </div>
+              <div class="line">
+                <span>ENDEREÇO:</span>
+                Rua Aurora Silveira - 1000B - Cônego
+              </div>
+              <div class="line">
+                
+              </div>
+              <div class="linefull">
+                <div class="line cidade">
+                  <span>CIDADE:</span>
+                  Nova Friburgo
+                </div>
+                <div class="line uf">
+                  <span>UF:</span>
+                  RJ
+                </div>
+              </div>
+              <div class="linefull">
+                <div class="line last cep">
+                  <span>CEP: </span>
+                  28621-220
+                </div>
+                <div class="line last cpf_cnpj">
+                  <span>CPF/CNPJ:</span>
+                  34.070.974/0001-63
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-6 destinatario">
+            <div class="decl-borda">
+              <div class="line title">
+                DESTINATÁRIO
+              </div>
+              <div class="line">
+                <span>NOME:</span>
+                @shp_name
+              </div>
+              <div class="line">
+                <span>ENDEREÇO: </span>
+                @shp_address1
+              </div>
+              <div class="line">
+                @shp_address2
+              </div>
+              <div class="linefull">
+                <div class="line cidade">
+                  <span>CIDADE: </span>
+                  @shp_city
+                </div>
+                <div class="line uf">
+                  <span>UF:</span>
+                  @shp_province
+                </div>
+              </div>
+              <div class="linefull">
+                <div class="line last cep">
+                  <span>CEP: </span>
+                  @shp_zip
+                </div>
+                <div class="line last cpf_cnpj">
+                  <span>CPF/CNPJ:</span>
+                  @shp_doc
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-xs-12 itens">
+            <div class="decl-borda">
+              <div class="line strong title">
+                IDENTIFICAÇÃO DOS BENS
+              </div>
+              
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="col0">ITEM</th>
+                    <th class="col1">CONTEÚDO</th>
+                    <th class="col2">QUANT.</th>
+                    <th class="col3 last">VALOR</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @itm_line
+                  <tr>
+                    <td colspan="2" class="bg-gray">TOTAIS</td>
+                    <td>@ord_qty</td>
+                    <td>@ord_value</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" class="bg-gray">PESO TOTAL (kg)</td>
+                    <td colspan="2"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-xs-12 declaracao">
+            <div class="decl-borda">
+              <div class="line strong title">
+                DECLARAÇÃO
+              </div>
+              
+              <P>
+                Declaro  que  não  me  enquadro  no  conceito  de  contribuinte  previsto  no  art.  4º  da  Lei  Complementar  nº  87/1996,  uma  vez que  não realizo, com habitualidade ou em volume que caracterize intuito comercial, operações de circulação de mercadoria, ainda que se iniciem no exterior, ou estou dispensado da emissão da nota fiscal por força da legislação tributária vigente, responsabilizando-me, nos termos da lei e a quem de direito, por informações inverídicas.
+              </P>
+              
+              
+              <P class="data">
+                Nova Friburgo, @day de @month de @year    _____________________________________
+              </P>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-xs-12 observacao">
+            <div class="decl-borda">
+              <p class="strong">
+                OBSERVAÇÃO
+              </p>
+              
+              <P>
+                Constitui crime contra a ordem tributária suprimir ou reduzir tributo, ou contribuição social e qualquer acessório (Lei 8.137/90 Art. 1º, V).
+              </P>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- <script>
+    $(document).ready( function () {
+      window.print()
+    });
+  </script> -->
+</body>
+</html>

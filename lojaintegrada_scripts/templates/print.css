@@ -1,0 +1,218 @@
+body {
+  font-family: Arial, sans-serif;
+}
+body .container {
+  width: 21cm;
+  max-height: 28.7cm;
+}
+#print-envio .cabecalho {
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+#print-envio .cabecalho .imagem {
+  height: 130px;
+}
+#print-envio .cabecalho .logo {
+  width: auto;
+  max-height: 130px;
+  max-width: 100%;
+}
+#print-envio .cabecalho .info-empresa {
+  text-align: right;
+  margin-top: 20px;
+}
+#print-envio .cabecalho .info-empresa * {
+  margin: 0;
+  line-height: 1.5em;
+}
+#print-envio .etiqueta {
+  border: 1px dashed #a7a7a7;
+  padding: 0.4cm;
+  margin: 1.2cm 0 1cm;
+  background: #fff;
+  min-height: 3.2cm;
+  position: relative;
+}
+#print-envio .etiqueta p {
+  margin: 0.2cm 0 0.2cm 0.2cm;
+}
+#print-envio .etiqueta .imagem-logo {
+  float: left;
+  width: 3.17cm;
+  height: 3.17cm;
+  margin-right: 0.4cm;
+  position: relative;
+}
+#print-envio .etiqueta .imagem-logo img {
+  width: auto;
+  height: auto;
+  max-width: 3.17cm;
+  max-height: 3.17cm;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  margin: auto;
+}
+#print-envio .etiqueta .tit {
+  display: block;
+  font-size: 14pt;
+  margin-bottom: 0.1cm;
+}
+#print-envio .etiqueta .tesoura {
+  position: absolute;
+  top: 0;
+  left: -0.68cm;
+}
+#print-envio .linha-recorte {
+  border-top: 3px dashed #ddd;
+  display: block;
+  clear: both;
+  margin: 0 0 35px;
+}
+#print-envio .recibo {
+  font-size: 0.9em;
+}
+#print-envio .recibo .corpo {
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+#print-envio .recibo .corpo .pull-left {
+  margin-left: 1cm;
+}
+#print-envio .recibo .corpo .pull-right {
+  margin-right: 1cm;
+}
+#print-declaracao .decl-borda {
+  border: 2px solid #000;
+  margin: 0.1cm;
+}
+#print-declaracao .decl-titulo {
+  text-align: center;
+  font-size: 18pt;
+  padding: 0.2cm 0;
+  font-weight: 600;
+  margin-top: 1.2cm;
+}
+#print-declaracao .remetente {
+  padding-right: 0 !important;
+}
+#print-declaracao .destinatario {
+  padding-left: 0 !important;
+}
+#print-declaracao .linefull {
+  height: 0.81cm;
+}
+#print-declaracao .line {
+  border-bottom: 1px solid #000;
+  margin: 0;
+  padding: 0.13cm;
+  height: 0.81cm;
+}
+#print-declaracao .line.strong {
+  border-bottom: 2px solid #000;
+}
+#print-declaracao .line.title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 12pt;
+  height: 0.95cm;
+}
+#print-declaracao .line.last {
+  border-bottom: 0 solid #000;
+}
+#print-declaracao .line span {
+  font-weight: 600;
+}
+#print-declaracao .line.cidade {
+  width: 80%;
+  position: relative;
+  float: left;
+}
+#print-declaracao .line.uf {
+  width: 20%;
+  position: relative;
+  float: right;
+  border-left: 1px solid #000;
+}
+#print-declaracao .line.cep {
+  width: 35%;
+  position: relative;
+  float: left;
+}
+#print-declaracao .line.cpf_cnpj {
+  width: 65%;
+  position: relative;
+  float: right;
+  border-left: 1px solid #000;
+}
+#print-declaracao .itens table {
+  margin-bottom: 0;
+}
+#print-declaracao .itens table tr {
+  border-bottom: 1px solid #888;
+}
+#print-declaracao .itens table tr.last {
+  border-bottom: 0 solid #888;
+}
+#print-declaracao .itens table th, #print-declaracao .itens table td {
+  margin: 0;
+  padding: 0.13cm 0;
+  height: 0.81cm;
+  text-align: center;
+  border-right: 1px solid #888;
+  border-top: 0 solid #888;
+  border-bottom: 0 solid #888;
+}
+#print-declaracao .itens table th.col0, #print-declaracao .itens table td.col0 {
+  width: 10%;
+}
+#print-declaracao .itens table th.col1, #print-declaracao .itens table td.col1 {
+  width: 60%;
+}
+#print-declaracao .itens table th.col2, #print-declaracao .itens table td.col2 {
+  width: 15%;
+}
+#print-declaracao .itens table th.col3, #print-declaracao .itens table td.col3 {
+  width: 15%;
+}
+#print-declaracao .itens table th.last, #print-declaracao .itens table td.last {
+  border-right: 0 solid #888;
+}
+#print-declaracao .itens table th.bg-gray, #print-declaracao .itens table td.bg-gray {
+  background-color: #ddd;
+  font-weight: 600;
+  text-align: right;
+  padding-right: 0.1cm;
+}
+#print-declaracao .declaracao p {
+  text-indent: 1cm;
+  margin: 0.6cm 0.3cm;
+}
+#print-declaracao .declaracao p.data {
+  text-align: center;
+  font-size: 12pt;
+  text-indent: 0;
+}
+#print-declaracao .observacao p {
+  margin-left: 0.1cm;
+  margin-bottom: 0.5cm;
+  font-size: 9pt;
+}
+#print-declaracao .observacao p.strong {
+  font-weight: 600;
+  font-size: 12pt;
+  margin-bottom: 0;
+  margin-top: 0.5cm;
+}
+@media print {
+  @page {
+    size: auto;
+    margin: 0;
+ }
+  .page-break {
+    display: block;
+    page-break-after: always;
+ }
+}
