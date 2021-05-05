@@ -7,6 +7,7 @@ class Shopify:
   _base_url = 'https://{api_key}:{password}@{store}.myshopify.com/admin/api/2021-04'
 
   def __init__(self, api_key:str, password:str, store:str):
+    self.store = store.title()
     self._base_url = self._base_url.format(api_key=api_key, password=password, store=store)
     self.base_params = {
       'limit': 250,
