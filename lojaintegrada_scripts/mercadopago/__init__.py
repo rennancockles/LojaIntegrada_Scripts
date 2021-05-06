@@ -1,1 +1,0 @@
-from .MercadoPago import MercadoPago

@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-from datetime import datetime, date
+from datetime import date
 
+from pagamentos import Pagamento
 from lojaintegrada import LojaIntegrada
-from pagseguro import PagSeguro
-from mercadopago import MercadoPago
-from helpers import add_util_days, to_money, to_csv, is_pagseguro, is_mercadopago, mailer
+from helpers import add_util_days, to_money, to_csv, mailer
 
 logger = logging.getLogger(__name__)
 
 class PedidosPagos:
   def __init__(self, LI:LojaIntegrada, datas:list[date], email_to:list):
-    self.pagseguro = PagSeguro(email=os.getenv("PAGSEGURO_EMAIL"), token=os.getenv("PAGSEGURO_TOKEN"))
-    self.mercadopago = MercadoPago(token=os.getenv("MERCADOPAGO_TOKEN"))
-
     self.ecommerceAPI = LI
     self.datas = datas
     self.email_to=email_to
@@ -46,30 +41,17 @@ class PedidosPagos:
       pedido = self.ecommerceAPI.get_pedido_info(atualizacao['numero'])
       total += float(pedido['valor_total']) 
       pedido['data_leitura'] = data
-      pedido['detalhe_pagamento'] = self.get_pagamento(pedido['pagamentos'][0])
+      pedido['detalhe_pagamento'] = Pagamento.consulta_detalhe_transacao(forma_pagamento=pedido['pagamentos'][0]['forma_pagamento']['codigo'], transacao_id=pedido['pagamentos'][0]['transacao_id'])
       logger.debug(f"Pedido {pedido['numero']} => {to_money(pedido['valor_total'])}")
-      pedidos.append(self.pedido_mapper(pedido))
     
     logger.info(f"Total {to_money(total)}")
     return pedidos
 
-  def get_pagamento(self, dados_pagamento):
-    detalhe_pagamento = {}
-    if dados_pagamento['transacao_id']:
-      codigo = dados_pagamento['forma_pagamento']['codigo']
-      
-      if is_pagseguro(codigo):
-        detalhe_pagamento = self.pagseguro.consulta_detalhe_transacao(dados_pagamento['transacao_id'])
-      elif is_mercadopago(codigo):
-        detalhe_pagamento = self.mercadopago.consulta_detalhe_transacao(dados_pagamento['transacao_id'])
-
-    return detalhe_pagamento
-  
   def pedido_mapper(self, pedido):
     cliente = pedido['cliente']
     envio = pedido['envios'][0]
     pagamento = pedido['pagamentos'][0]
-    detalhe_pagamento = pedido['detalhe_pagamento'].get('transaction', {})
+    detalhe_pagamento = pedido['detalhe_pagamento']
 
     disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
     custo = sum(map(lambda item: float(item['preco_custo']), pedido['itens']))
@@ -78,22 +60,18 @@ class PedidosPagos:
     if pedido['cupom_desconto'] is not None:
       cupom = pedido['cupom_desconto'].get('codigo', '')
 
-    total_liquido = detalhe_pagamento.get('netAmount', '')
+    total_liquido = detalhe_pagamento.get('total_liquido', '')
     lucro_bruto = ''
     if total_liquido:
       total_liquido = float(total_liquido)
       lucro_bruto = total_liquido - custo
-
-    liberacao_pagamento = detalhe_pagamento.get('escrowEndDate', '')
-    if liberacao_pagamento:
-      liberacao_pagamento = datetime.strptime(liberacao_pagamento.split('T')[0], "%Y-%m-%d").strftime('%d/%m/%Y')
 
     return {
       'cliente': cliente['nome'],
       'pedido': pedido['numero'],
       'situação': pedido['situacao']['nome'],
       'data': pedido['data_leitura'].strftime('%d/%m/%Y'),
-      'liberacao_pagamento': liberacao_pagamento,
+      'liberacao_pagamento': detalhe_pagamento.get('liberacao_pagamento', ''),
 
       'pagamento': f"{pagamento['forma_pagamento']['codigo']} - {pagamento['forma_pagamento']['nome']}",
       'cupom': cupom,
@@ -110,7 +88,7 @@ class PedidosPagos:
       'desconto': to_money(pedido['valor_desconto']),
       'frete': to_money(pedido['valor_envio']),
       'total': to_money(pedido['valor_total']),
-      'taxas': to_money(sum([float(value) for value in detalhe_pagamento.get('creditorFees', {}).values()])),
+      'taxas': to_money(detalhe_pagamento.get('taxas', '')),
       'total_líquido': to_money(total_liquido),    
       'custo': to_money(custo),
       'lucro_bruto': to_money(lucro_bruto),

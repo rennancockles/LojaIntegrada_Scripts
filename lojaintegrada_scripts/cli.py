@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import argparse
 import os
 import logging
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
 
 import scripts
 from lojaintegrada import LojaIntegrada
 from shopify import Shopify
 from helpers import date_range
 
-load_dotenv()
 logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
 li_api_key = os.getenv("LI_API_KEY")

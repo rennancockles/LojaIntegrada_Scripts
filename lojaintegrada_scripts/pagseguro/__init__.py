@@ -1,1 +1,0 @@
-from .PagSeguro import PagSeguro
