@@ -86,7 +86,7 @@ class Declaracao:
                       .replace('@shp_name_upper', dados['shp_name'].upper()) \
                       .replace('@shp_name', dados['shp_name']) \
                       .replace('@shp_address1', dados['shp_address1']) \
-                      .replace('@shp_address2', dados['shp_address2']) \
+                      .replace('@shp_address2', dados['shp_address2'] or '') \
                       .replace('@shp_city', dados['shp_city']) \
                       .replace('@shp_province', dados['shp_province']) \
                       .replace('@shp_zip', dados['shp_zip']) \
