@@ -2,6 +2,7 @@ from pagamentos.errors import InvalidTransactionCodeError, InvalidCredentialErro
 from pagamentos import PagamentoABC
 
 import requests
+from datetime import datetime
 
 
 # docs: https://developers.mercadolivre.com.br/pt_br/gerenciamento-de-pagamentos
@@ -33,14 +34,15 @@ class MercadoPago(PagamentoABC):
     return self._execute_get(f'/v1/payments/{codigo_transacao}')
   
   def adapt_response(self, response):
-    fee_details = filter(lambda fee: fee.get('fee_payer', '') == 'collector', response.get('fee_details', []))
-    creditorFees = {fee['type']:fee['amount'] for fee in fee_details}
+    taxas = str(sum([float(fee['amount']) for fee in filter(lambda fee: fee.get('fee_payer', '') == 'collector', response.get('fee_details', []))]))
+    liberacao_pagamento = response.get('money_release_date', '')
+    if liberacao_pagamento:
+      liberacao_pagamento = datetime.strptime(liberacao_pagamento.split('T')[0], "%Y-%m-%d").strftime('%d/%m/%Y')
+
     return {
-      'transaction': {
-        'netAmount': response.get('transaction_details', {}).get('net_received_amount', ''),
-        'escrowEndDate': response.get('money_release_date', ''),
-        'creditorFees': creditorFees
-      }
+      'total_liquido': response.get('transaction_details', {}).get('net_received_amount', ''),
+      'liberacao_pagamento': liberacao_pagamento,
+      'taxas': taxas
     }
   
   @staticmethod

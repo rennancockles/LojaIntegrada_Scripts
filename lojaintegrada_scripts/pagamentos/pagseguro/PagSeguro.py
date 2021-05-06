@@ -3,6 +3,7 @@ from pagamentos import PagamentoABC
 
 import requests
 import xmltodict
+from datetime import datetime
 
 
 class PagSeguro(PagamentoABC):
@@ -87,7 +88,17 @@ class PagSeguro(PagamentoABC):
     return self._execute_get(f'/v3/transactions/{codigo_transacao}')
   
   def adapt_response(self, response):
-    return response
+    detalhe_pagamento = response.get('transaction', {})
+    taxas = str(sum([float(value) for value in detalhe_pagamento.get('creditorFees', {}).values()]))
+    liberacao_pagamento = detalhe_pagamento.get('escrowEndDate', '')
+    if liberacao_pagamento:
+      liberacao_pagamento = datetime.strptime(liberacao_pagamento.split('T')[0], "%Y-%m-%d").strftime('%d/%m/%Y')
+
+    return {
+      'total_liquido': detalhe_pagamento.get('netAmount', ''),
+      'liberacao_pagamento': liberacao_pagamento,
+      'taxas': taxas
+    }
   
   @staticmethod
   def _is_codigo_valido(codigo_transacao):
