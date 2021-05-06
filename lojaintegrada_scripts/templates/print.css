@@ -4,7 +4,16 @@ body {
 body .container {
   width: 21cm;
   max-height: 28.7cm;
-  margin-top: 0.5cm;
+  margin-top: 0.4cm;
+  font-size: 12px;
+}
+#print-declaracao .decl-borda.etiqueta .line.title {
+  height: 0.7cm;
+  font-size: 11pt;
+}
+#print-declaracao .decl-borda.etiqueta .line {
+  height: 0.6cm;
+  font-size: 9pt;
 }
 #print-envio .cabecalho {
   overflow: hidden;
@@ -96,14 +105,14 @@ body .container {
   border-top: 3px dashed #DDD;
   display: block;
   clear: both;
-  margin-top: 0.8cm;
+  margin-top: 0.4cm;
 }
 #print-declaracao .decl-titulo {
   text-align: center;
   font-size: 18pt;
   padding: 0.2cm 0;
   font-weight: 600;
-  margin-top: 0.8cm;
+  margin-top: 0.4cm;
 }
 #print-declaracao .remetente {
   padding-right: 0 !important;
