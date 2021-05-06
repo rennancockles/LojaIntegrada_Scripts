@@ -6,6 +6,7 @@ from datetime import datetime, date
 
 from lojaintegrada import LojaIntegrada
 from pagseguro import PagSeguro
+from mercadopago import MercadoPago
 from helpers import add_util_days, to_money, to_csv, is_pagseguro, is_mercadopago, mailer
 
 logger = logging.getLogger(__name__)
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 class PedidosPagos:
   def __init__(self, LI:LojaIntegrada, datas:list[date], email_to:list):
     self.pagseguro = PagSeguro(email=os.getenv("PAGSEGURO_EMAIL"), token=os.getenv("PAGSEGURO_TOKEN"))
+    self.mercadopago = MercadoPago(token=os.getenv("MERCADOPAGO_TOKEN"))
 
     self.ecommerceAPI = LI
     self.datas = datas
@@ -59,7 +61,7 @@ class PedidosPagos:
       if is_pagseguro(codigo):
         detalhe_pagamento = self.pagseguro.consulta_detalhe_transacao(dados_pagamento['transacao_id'])
       elif is_mercadopago(codigo):
-        pass
+        detalhe_pagamento = self.mercadopago.consulta_detalhe_transacao(dados_pagamento['transacao_id'])
 
     return detalhe_pagamento
   
