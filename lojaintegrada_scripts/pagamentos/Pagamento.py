@@ -14,7 +14,7 @@ class Pagamento:
 
   @staticmethod
   def is_mercadopago(codigo:str) -> bool:
-    return codigo in ['mercadopagov1']
+    return codigo in ['mercadopagov1', 'mpboleto']
 
   @classmethod
   def _get_instance(cls, forma_pagamento):
