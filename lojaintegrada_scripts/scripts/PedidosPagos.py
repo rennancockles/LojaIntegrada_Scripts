@@ -43,6 +43,7 @@ class PedidosPagos:
       pedido['data_leitura'] = data
       pedido['detalhe_pagamento'] = Pagamento.consulta_detalhe_transacao(forma_pagamento=pedido['pagamentos'][0]['forma_pagamento']['codigo'], transacao_id=pedido['pagamentos'][0]['transacao_id'])
       logger.debug(f"Pedido {pedido['numero']} => {to_money(pedido['valor_total'])}")
+      pedidos.append(self.pedido_mapper(pedido))
     
     logger.info(f"Total {to_money(total)}")
     return pedidos
@@ -95,7 +96,9 @@ class PedidosPagos:
     }
 
   def send_mail(self, csv_path:str):
+    logger.info("Enviando email")
     if not self.email_to:
+      logger.error("Email não enviado")
       return
 
     br_date_i = self.datas[0].strftime('%d/%m/%Y')
@@ -113,3 +116,4 @@ class PedidosPagos:
                 subject=subject,
                 body=body,
                 files_to_send=files_to_send)
+    logger.info("Email enviado com sucesso!")

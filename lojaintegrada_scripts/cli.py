@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import argparse
-import os
 import logging
 from datetime import datetime, timedelta
 
