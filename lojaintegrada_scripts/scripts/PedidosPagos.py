@@ -4,20 +4,20 @@ import logging
 from datetime import date
 
 from pagamentos import Pagamento
-from lojaintegrada import LojaIntegrada
+from plataformas import PlataformaABC
 from helpers import add_util_days, to_money, to_csv, mailer
 
 logger = logging.getLogger(__name__)
 
 class PedidosPagos:
-  def __init__(self, LI:LojaIntegrada, datas:list[date], email_to:list):
-    self.ecommerceAPI = LI
+  def __init__(self, plataforma:PlataformaABC, datas:list[date], email_to:list):
+    self.plataforma = plataforma
     self.datas = datas
     self.email_to=email_to
 
   def __call__(self):
     logger.info(f'buscando atualizacoes entre {self.datas[0]} e {self.datas[-1]}')
-    atualizacoes = self.ecommerceAPI.lista_atualizacoes_por_datas(self.datas)
+    atualizacoes = self.plataforma.lista_atualizacoes_por_datas(self.datas)
     logger.info('atualizacoes obtidas com sucesso')
 
     pedidos = []
@@ -38,7 +38,7 @@ class PedidosPagos:
     total = 0
 
     for atualizacao in atualizacoes_pedidos_pagos:
-      pedido = self.ecommerceAPI.get_pedido_info(atualizacao['numero'])
+      pedido = self.plataforma.get_pedido_info(atualizacao['numero'])
       total += float(pedido['valor_total']) 
       pedido['data_leitura'] = data
       pedido['detalhe_pagamento'] = Pagamento.consulta_detalhe_transacao(forma_pagamento=pedido['pagamentos'][0]['forma_pagamento']['codigo'], transacao_id=pedido['pagamentos'][0]['transacao_id'])

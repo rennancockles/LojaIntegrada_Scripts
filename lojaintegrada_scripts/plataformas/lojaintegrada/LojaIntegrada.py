@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from lojaintegrada.LojaIntegradaAPI import LojaIntegradaAPI
-from lojaintegrada.errors import APIError
-from lojaintegrada.helpers import to_date, FileHandler
+from .LojaIntegradaAPI import LojaIntegradaAPI
+from plataformas.errors import APIError
+from plataformas.helpers import to_date, FileHandler
 
 import logging
 import os
@@ -15,8 +15,9 @@ MIN_DAYS_TO_EXPORT = 7
 
 
 class LojaIntegrada(LojaIntegradaAPI):
-  def __init__(self, api_key:str, app_key:str):
+  def __init__(self, api_key:str, app_key:str, store:str=''):
     super().__init__(api_key, app_key)
+    self.store = store.title()
     self.fileHandler = FileHandler(DATA_DIRECTORY)
 
   def _filtra_response_por_data(self, response, data):

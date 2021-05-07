@@ -1,10 +1,11 @@
-from lojaintegrada.errors import ResponseError
-from lojaintegrada.decorators import retry
+from plataformas.errors import ResponseError
+from plataformas.decorators import retry
+from plataformas import PlataformaABC
 
 import requests
 
 
-class LojaIntegradaAPI:
+class LojaIntegradaAPI(PlataformaABC):
   _base_url = 'https://api.awsli.com.br/v1'
 
   def __init__(self, api_key:str, app_key:str):
@@ -30,7 +31,6 @@ class LojaIntegradaAPI:
       return response.json()
     else:
       raise ResponseError(response)
-
 
   def lista_pedidos(self, since_numero=None, since_atualizado=None, cliente_id=None, pagamento_id=None, situacao_id=None, since_criado=None, until_criado=None, limit=20, offset=0):
     params = {

@@ -1,4 +1,4 @@
-from lojaintegrada.errors import MaxRetryError, ResponseError
+from plataformas.errors import MaxRetryError, ResponseError
 from functools import wraps
 
 def retry(_f=None, *, max_retry=3):

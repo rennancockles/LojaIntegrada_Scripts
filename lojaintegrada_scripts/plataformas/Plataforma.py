@@ -2,12 +2,19 @@
 
 import os
 from .shopify import Shopify
+from .lojaintegrada import LojaIntegrada
 
 
 class Plataforma():
+  shopify = Shopify(api_key=os.getenv("SHOPIFY_API_KEY"), 
+                    password=os.getenv("SHOPIFY_PASSWORD"), 
+                    store=os.getenv("SHOPIFY_STORE"))
+  lojaintegrada = LojaIntegrada(api_key=os.getenv("LI_API_KEY"), 
+                                app_key=os.getenv("LI_APP_KEY"), 
+                                store=os.getenv("LI_STORE"))
   plataformas = {
-    'shopify': Shopify(api_key=os.getenv("SHOPIFY_API_KEY"), password=os.getenv("SHOPIFY_PASSWORD"), store=os.getenv("SHOPIFY_STORE")),
-    # 'lojaintegrada': LojaIntegrada(api_key=os.getenv("LI_API_KEY"), app_key=os.getenv("LI_APP_KEY"))
+    'shopify': shopify,
+    'lojaintegrada': lojaintegrada,
   }
 
   def get_plataforma(nome:str):
