@@ -10,16 +10,13 @@ from datetime import datetime, timedelta
 
 import scripts
 from lojaintegrada import LojaIntegrada
-from shopify import Shopify
+from plataformas import Plataforma
 from helpers import date_range
 
 logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
 li_api_key = os.getenv("LI_API_KEY")
 li_app_key = os.getenv("LI_APP_KEY")
-shopify_api_key = os.getenv("SHOPIFY_API_KEY")
-shopify_password = os.getenv("SHOPIFY_PASSWORD")
-shopify_store = os.getenv("SHOPIFY_STORE")
 
 
 def parse_args():
@@ -60,10 +57,9 @@ def validate_args(args):
 def script_orchestrator(scriptClass, datas, args):
   script_name = args.script.lower()
   LI = LojaIntegrada(api_key=li_api_key, app_key=li_app_key)
-  SHOPIFY = Shopify(api_key=shopify_api_key, password=shopify_password, store=shopify_store)
 
   if script_name == 'declaracao':
-    script = scriptClass(SHOPIFY, args.pedido)
+    script = scriptClass(Plataforma.get_plataforma('shopify'), args.pedido)
   elif script_name == 'pedidospagos':
     script = scriptClass(LI, datas, email_to=args.mail_to)
 

@@ -5,7 +5,7 @@ from datetime import datetime
 from os import path
 from pathlib import Path
 
-from shopify import Shopify
+from plataformas import PlataformaABC
 from helpers import to_money, month_names
 
 logger = logging.getLogger(__name__)
@@ -13,16 +13,16 @@ CWD = path.dirname(path.abspath(__file__))
 
 
 class Declaracao:
-  def __init__(self, SHOPIFY:Shopify, pedido_id:int):
+  def __init__(self, plataforma:PlataformaABC, pedido_id:int):
     if not pedido_id:
       raise Exception('Id do Pedido não informado!')
 
-    self.ecommerceAPI = SHOPIFY
+    self.plataforma = plataforma
     self.pedido_id = pedido_id
 
   def __call__(self):
     logger.info(f'buscando dados do pedido {self.pedido_id}')
-    pedido = self.ecommerceAPI.get_pedido_info(self.pedido_id)
+    pedido = self.plataforma.get_pedido_info(self.pedido_id)
     dados_declaracao = self.pedido_mapper(pedido.get('order', {}))
     logger.info('dados obtidos com sucesso')
 
@@ -42,7 +42,7 @@ class Declaracao:
     } for i, line in enumerate(line_items)]
 
     return {
-      'store': self.ecommerceAPI.store,
+      'store': self.plataforma.store,
       'order_number': pedido['order_number'],
 
       'shp_name': shipping_address['name'],

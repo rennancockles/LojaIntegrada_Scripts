@@ -1,9 +1,10 @@
-from shopify.errors import ResponseError
+from plataformas.errors import ResponseError
+from plataformas import PlataformaABC
 
 import requests
 
 
-class Shopify:
+class Shopify(PlataformaABC):
   _base_url = 'https://{api_key}:{password}@{store}.myshopify.com/admin/api/2021-04'
 
   def __init__(self, api_key:str, password:str, store:str):
