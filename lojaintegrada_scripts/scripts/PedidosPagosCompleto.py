@@ -77,6 +77,7 @@ class PedidosPagosCompleto:
       'Data': pedido['data_leitura'].strftime('%d/%m/%Y'),
       'Cliente': cliente['nome'],
       'Pedido': pedido['numero'],
+      'Prazo de Envio': add_util_days(pedido['data_leitura'], disponibilidade).strftime('%d/%m/%Y'),
 
       'Itens': [{
         'SKU': it['sku'], 
@@ -84,7 +85,8 @@ class PedidosPagosCompleto:
         'QTD': float(it['quantidade']),
         'Fornecedor': '',
         'Custo Real': '',
-        'Preço Vendido': round(float(it['preco_venda']), 2)} 
+        'Custo Site': to_money(it['preco_custo']),
+        'Preço Vendido': to_money(it['preco_venda'])} 
         for it in itens],
 
       'Situação': pedido['situacao']['nome'],
@@ -94,7 +96,9 @@ class PedidosPagosCompleto:
       'Código': pagamento['transacao_id'],
       'Parcelas': pagamento['parcelamento'].get('numero_parcelas', 0),
 
-      'Prazo de Envio': add_util_days(pedido['data_leitura'], disponibilidade).strftime('%d/%m/%Y'),
+      'Rastreio': '',
+      'Frete Real': '',
+
       'Cupom': cupom,
       # 'Disponibilidade': disponibilidade,
       'Prazo de Frete': int(envio['prazo']) - disponibilidade,
@@ -107,8 +111,7 @@ class PedidosPagosCompleto:
       'Total': to_money(pedido['valor_total']),
       'Taxas': to_money(detalhe_pagamento.get('taxas', '')),
       'Total Líquido': to_money(total_liquido),    
-      'Custo Site': to_money(custo),
-      'Lucro Bruto': to_money(lucro_bruto),
+      # 'Lucro Bruto': to_money(lucro_bruto),
     }
 
   def send_mail(self, file_path:str):
