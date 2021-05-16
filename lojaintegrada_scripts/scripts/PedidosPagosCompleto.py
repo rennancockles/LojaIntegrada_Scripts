@@ -95,14 +95,16 @@ class PedidosPagosCompleto:
       'Pagamento': f"{pagamento['forma_pagamento']['codigo']} - {pagamento['forma_pagamento']['nome']}",
       'Código': pagamento['transacao_id'],
       'Parcelas': pagamento['parcelamento'].get('numero_parcelas', 0),
+      'Cupom': cupom,
 
-      'Rastreio': '',
+      'Data Envio': '',
+      'Rastreio': envio['objeto'],
       'Frete Real': '',
 
-      'Cupom': cupom,
       # 'Disponibilidade': disponibilidade,
       'Prazo de Frete': int(envio['prazo']) - disponibilidade,
       'Envio': f"{envio['forma_envio']['nome']} - {envio['forma_envio']['tipo']}",
+      'CEP': pedido['endereco_entrega']['cep'],
       'Estado': pedido['endereco_entrega']['estado'],
 
       'Subtotal': to_money(pedido['valor_subtotal']),
