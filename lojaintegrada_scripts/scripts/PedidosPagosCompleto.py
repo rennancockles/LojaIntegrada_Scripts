@@ -6,6 +6,7 @@ from datetime import date
 from os import path
 
 from pagamentos import Pagamento
+from envios import Envio
 from plataformas import PlataformaABC
 from helpers import add_util_days, to_money, mailer
 
@@ -63,6 +64,12 @@ class PedidosPagosCompleto:
     disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
     custo = sum(map(lambda item: float(item['preco_custo']), pedido['itens']))
 
+    rastreio = envio['objeto']
+    data_envio = ''
+    if rastreio:
+      track_json = Envio.track(rastreio)
+      data_envio = track_json.get('objeto', [{}])[0].get('evento', [{}])[0].get('dataPostagem', '')
+
     cupom = ''
     if pedido['cupom_desconto'] is not None:
       cupom = pedido['cupom_desconto'].get('codigo', '')
@@ -97,8 +104,8 @@ class PedidosPagosCompleto:
       'Parcelas': pagamento['parcelamento'].get('numero_parcelas', 0),
       'Cupom': cupom,
 
-      'Data Envio': '',
-      'Rastreio': envio['objeto'],
+      'Data Envio': data_envio,
+      'Rastreio': rastreio,
       'Frete Real': '',
 
       # 'Disponibilidade': disponibilidade,
