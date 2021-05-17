@@ -56,6 +56,8 @@ def script_orchestrator(scriptClass, datas, args):
     script = scriptClass(Plataforma.get_plataforma('shopify'), args.pedido)
   elif script_name in ['pedidospagos', 'pedidospagoscompleto']:
     script = scriptClass(Plataforma.get_plataforma('lojaintegrada'), datas, email_to=args.mail_to)
+  elif script_name in ['pedidosenviados']:
+    script = scriptClass(Plataforma.get_plataforma('lojaintegrada'), email_to=args.mail_to)
 
   script()
 
