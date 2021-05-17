@@ -132,3 +132,23 @@ class LojaIntegrada(LojaIntegradaAPI):
       self.fileHandler.export_file(filename, dados_filtrados)
 
     return dados_filtrados
+
+  def lista_pedidos_enviados(self, limit:int=20):
+    offset = 0
+    dados = []
+
+    while True:
+      response = self.lista_pedidos(situacao_id=11, offset=offset, limit=limit)
+
+      if not response.get('meta', False):
+        raise APIError(response)
+
+      meta = response['meta']
+      dados += response['objects']
+
+      if not meta.get('next', False):
+        break
+      
+      offset += limit
+
+    return dados
