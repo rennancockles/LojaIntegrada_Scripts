@@ -39,7 +39,7 @@ class LojaIntegradaAPI(PlataformaABC):
       and k != 'self' 
       and v
     }
-    return self._execute_get('pedido/search/', params)
+    return self._execute_get('/pedido/search/', params)
 
   def lista_historico_situacao(self, limit=20, offset=0):
     params = {
