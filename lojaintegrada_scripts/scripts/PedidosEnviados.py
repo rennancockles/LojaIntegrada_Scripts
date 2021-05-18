@@ -45,10 +45,13 @@ class PedidosEnviados:
 
   def pedido_mapper(self, pedido):    
     last_event = pedido['rastreio'].get('objeto', [{}])[0].get('evento', [{}])[0]
+    cep_destino = last_event.get('cepDestino', '')
+    if cep_destino:
+      cep_destino = f'{cep_destino[:5]}-{cep_destino[5:]}'
 
     return {
       'pedido': pedido['numero'],
-      'cep_destino': last_event.get('cepDestino', ''),
+      'cep_destino': cep_destino,
       'data_postagem': last_event.get('dataPostagem', ''),
       'objeto': pedido['envios'][0]['objeto'],
       'data': last_event.get('data', ''),

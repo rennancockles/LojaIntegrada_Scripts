@@ -34,4 +34,4 @@ class Pagamento:
     if PG_CLASS is None:
       return {}
       
-    return PG_CLASS.consulta_detalhe_transacao(transacao_id)
+    return PG_CLASS.consulta_detalhe_transacao(transacao_id) or {}

@@ -43,7 +43,7 @@ class PedidosPagosCompleto:
     pedidos = []
     total = 0
 
-    for atualizacao in atualizacoes_pedidos_pagos:
+    for atualizacao in sorted(atualizacoes_pedidos_pagos, key=lambda at: at['numero']):
       pedido = self.plataforma.get_pedido_info(atualizacao['numero'])
       total += float(pedido['valor_total']) 
       pedido['data_leitura'] = data
@@ -73,6 +73,10 @@ class PedidosPagosCompleto:
     cupom = ''
     if pedido['cupom_desconto'] is not None:
       cupom = pedido['cupom_desconto'].get('codigo', '')
+
+    cep = pedido['endereco_entrega']['cep']
+    if cep:
+      cep = f'{cep[:5]}-{cep[5:]}'
 
     total_liquido = detalhe_pagamento.get('total_liquido', '')
     lucro_bruto = ''
@@ -111,7 +115,7 @@ class PedidosPagosCompleto:
       # 'Disponibilidade': disponibilidade,
       'Prazo de Frete': int(envio['prazo']) - disponibilidade,
       'Envio': f"{envio['forma_envio']['nome']} - {envio['forma_envio']['tipo']}",
-      'CEP': pedido['endereco_entrega']['cep'],
+      'CEP': cep,
       'Estado': pedido['endereco_entrega']['estado'],
 
       'Subtotal': to_money(pedido['valor_subtotal']),
