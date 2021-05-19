@@ -25,22 +25,26 @@ class PedidosPagosCompleto:
     atualizacoes = self.plataforma.lista_atualizacoes_por_datas(self.datas)
     logger.info('atualizacoes obtidas com sucesso')
 
-    pedidos = []
+    pedidosDetalhados = []
+    pedidosItens = []
       
     for data in self.datas:
       logger.info(f'executando para a data {data}')
       atualizacoes_pedidos_pagos = atualizacoes.get(str(data), {}).get('pedido_pago', [])
 
-      pedidos += self.get_pedidos(atualizacoes_pedidos_pagos, data)
+      pedidos = self.get_pedidos(atualizacoes_pedidos_pagos, data)
+      pedidosDetalhados += pedidos['detalhado']
+      pedidosItens += pedidos['itens']
 
-    if pedidos:
-      # csv_path = to_csv(pedidos)
-      xlsx_path = self.to_excel(pedidos)
-      self.send_mail(xlsx_path)
+    if pedidosDetalhados:
+      detalhado_xlsx_path = self.to_excel(pedidosDetalhados, path.join(TMP, 'pedidosDetalhados.xlsx'))
+      itens_xlsx_path = self.to_excel(pedidosItens, path.join(TMP, 'pedidosItens.xlsx'))
+      self.send_mail(detalhado_xlsx_path, itens_xlsx_path)
 
   def get_pedidos(self, atualizacoes_pedidos_pagos, data:date):
     logger.info(f'{len(atualizacoes_pedidos_pagos)} pedidos pagos')
-    pedidos = []
+    pedidosDetalhados = []
+    pedidosItens = []
     total = 0
 
     for atualizacao in sorted(atualizacoes_pedidos_pagos, key=lambda at: at['numero']):
@@ -49,10 +53,12 @@ class PedidosPagosCompleto:
       pedido['data_leitura'] = data
       pedido['detalhe_pagamento'] = Pagamento.consulta_detalhe_transacao(forma_pagamento=pedido['pagamentos'][0]['forma_pagamento']['codigo'], transacao_id=pedido['pagamentos'][0]['transacao_id'])
       logger.debug(f"Pedido {pedido['numero']} => {to_money(pedido['valor_total'])}")
-      pedidos.append(self.pedido_mapper(pedido))
+      
+      pedidosDetalhados.append(self.pedido_detalhado_mapper(pedido))
+      pedidosItens.append(self.pedido_itens_mapper(pedido))
     
     logger.info(f"Total {to_money(total)}")
-    return pedidos
+    return { 'detalhado': pedidosDetalhados, 'itens': pedidosItens }
 
   def pedido_mapper(self, pedido):
     cliente = pedido['cliente']
@@ -127,7 +133,117 @@ class PedidosPagosCompleto:
       # 'Lucro Bruto': to_money(lucro_bruto),
     }
 
-  def send_mail(self, file_path:str):
+  def pedido_itens_mapper(self, pedido):
+    cliente = pedido['cliente']
+    envio = pedido['envios'][0]
+    pagamento = pedido['pagamentos'][0]
+    detalhe_pagamento = pedido['detalhe_pagamento']
+    itens = pedido['itens']
+
+    disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
+    custo = sum(map(lambda item: float(item['preco_custo']), pedido['itens']))
+
+    rastreio = envio['objeto']
+    data_envio = ''
+    if rastreio:
+      track_json = Envio.track(rastreio)
+      data_envio = track_json.get('objeto', [{}])[0].get('evento', [{}])[0].get('dataPostagem', '')
+
+    cupom = ''
+    if pedido['cupom_desconto'] is not None:
+      cupom = pedido['cupom_desconto'].get('codigo', '')
+
+    cep = pedido['endereco_entrega']['cep']
+    if cep:
+      cep = f'{cep[:5]}-{cep[5:]}'
+
+    total_liquido = detalhe_pagamento.get('total_liquido', '')
+    lucro_bruto = ''
+    if total_liquido:
+      total_liquido = float(total_liquido)
+      lucro_bruto = total_liquido - custo
+
+    return {
+      'Data': pedido['data_leitura'].strftime('%d/%m/%Y'),
+      'Cliente': cliente['nome'],
+      'Pedido': pedido['numero'],
+      'Prazo de Envio': add_util_days(pedido['data_leitura'], disponibilidade).strftime('%d/%m/%Y'),
+
+      'Itens': [{
+        'SKU': it['sku'], 
+        'Itens': it['nome'], 
+        'QTD': float(it['quantidade']),
+        'Fornecedor': '',
+        'Custo Real': '',
+        'Custo Site': to_money(it['preco_custo']),
+        'Preço Vendido': to_money(it['preco_venda'])} 
+        for it in itens],
+    }
+
+  def pedido_detalhado_mapper(self, pedido):
+    cliente = pedido['cliente']
+    envio = pedido['envios'][0]
+    pagamento = pedido['pagamentos'][0]
+    detalhe_pagamento = pedido['detalhe_pagamento']
+    itens = pedido['itens']
+
+    disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
+    custo = sum(map(lambda item: float(item['preco_custo']), pedido['itens']))
+
+    rastreio = envio['objeto']
+    data_envio = ''
+    if rastreio:
+      track_json = Envio.track(rastreio)
+      data_envio = track_json.get('objeto', [{}])[0].get('evento', [{}])[0].get('dataPostagem', '')
+
+    cupom = ''
+    if pedido['cupom_desconto'] is not None:
+      cupom = pedido['cupom_desconto'].get('codigo', '')
+
+    cep = pedido['endereco_entrega']['cep']
+    if cep:
+      cep = f'{cep[:5]}-{cep[5:]}'
+
+    total_liquido = detalhe_pagamento.get('total_liquido', '')
+    lucro_bruto = ''
+    if total_liquido:
+      total_liquido = float(total_liquido)
+      lucro_bruto = total_liquido - custo
+
+    return {
+      'Data': pedido['data_leitura'].strftime('%d/%m/%Y'),
+      'Cliente': cliente['nome'],
+      'Pedido': pedido['numero'],
+
+      # 'Situação': pedido['situacao']['nome'],
+      'Liberação do Pagamento': detalhe_pagamento.get('liberacao_pagamento', ''),
+
+      'Pagamento': f"{pagamento['forma_pagamento']['codigo']} - {pagamento['forma_pagamento']['nome']}",
+      'Código': pagamento['transacao_id'],
+      'Parcelas': pagamento['parcelamento'].get('numero_parcelas', 0),
+      'Cupom': cupom,
+
+      'Data Envio': data_envio,
+      'Prazo de Envio': add_util_days(pedido['data_leitura'], disponibilidade).strftime('%d/%m/%Y'),
+      'Rastreio': rastreio,
+      'Frete Real': '',
+      'Frete': to_money(pedido['valor_envio']),
+
+      # 'Disponibilidade': disponibilidade,
+      'Prazo de Frete': int(envio['prazo']) - disponibilidade,
+      'Envio': f"{envio['forma_envio']['nome']} - {envio['forma_envio']['tipo']}",
+      'CEP': cep,
+      'Estado': pedido['endereco_entrega']['estado'],
+
+      'Subtotal': to_money(pedido['valor_subtotal']),
+      'Desconto': to_money(pedido['valor_desconto']),
+      'Total': to_money(pedido['valor_total']),
+      'Taxas': to_money(detalhe_pagamento.get('taxas', '')),
+      'Total Líquido': to_money(total_liquido),    
+      # 'Lucro Bruto': to_money(lucro_bruto),
+    }
+
+  def send_mail(self, detalhado_file_path:str, itens_file_path:str):
     logger.info("Enviando email")
     if not self.email_to:
       logger.error("Email não enviado")
@@ -138,7 +254,8 @@ class PedidosPagosCompleto:
 
     subject = f"Dados do dia {br_date_i}"
     body = f'Bom dia \n\nsegue em anexo os pedidos pagos do dia {br_date_i}'
-    files_to_send=[{'name': 'Pedidos Pagos', 'file': file_path}]
+    files_to_send=[{'name': 'Site Detalhado', 'file': detalhado_file_path},
+                   {'name': 'Pedidos Site', 'file': itens_file_path},]
 
     if self.datas[0] != self.datas[-1]:
       subject += f" ao dia {br_date_f}"
@@ -150,8 +267,7 @@ class PedidosPagosCompleto:
                 files_to_send=files_to_send)
     logger.info("Email enviado com sucesso!")
 
-  def to_excel(self, pedidos):
-    file_path = path.join(TMP, 'tmp.xlsx')
+  def to_excel(self, pedidos, file_path):
     workbook = xlsxwriter.Workbook(file_path)
     worksheet = workbook.add_worksheet()
     row = 1

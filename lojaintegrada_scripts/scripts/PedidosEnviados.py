@@ -93,7 +93,7 @@ class PedidosEnviados:
     col = -1
     body_format = workbook.add_format({
       'font_size': 9,
-      'align': 'center',
+      'align': 'left',
       'valign': 'vcenter',
     })
 
