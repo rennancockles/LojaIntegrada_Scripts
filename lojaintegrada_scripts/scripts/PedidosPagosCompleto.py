@@ -285,6 +285,7 @@ class PedidosPagosCompleto:
   def _write_excel_row(self, workbook, worksheet, first_row, last_row, row_data):
     col = -1
     body_format = workbook.add_format({
+      'font_name': 'Arial',
       'font_size': 9,
       'align': 'center',
       'valign': 'vcenter',
@@ -308,6 +309,7 @@ class PedidosPagosCompleto:
   def _write_excel_header(self, workbook, worksheet, row_data):
     header_format = workbook.add_format({
       'bold': True,
+      'font_name': 'Arial',
       'font_size': 9,
       'bg_color': '#b7e1cd',
       'align': 'center',

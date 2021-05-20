@@ -41,7 +41,13 @@ class PedidosEnviados:
     if codigo_rastreio:
       pedido['rastreio'] = Envio.track(codigo_rastreio)
 
-    return self.pedido_mapper(pedido)
+    mapped = self.pedido_mapper(pedido)
+
+    if 'entregue' in mapped['descricao'].lower():
+      # atualiza o status do pedido na loja integrada
+      pass
+
+    return mapped
 
   def pedido_mapper(self, pedido):    
     last_event = pedido['rastreio'].get('objeto', [{}])[0].get('evento', [{}])[0]
@@ -92,6 +98,7 @@ class PedidosEnviados:
   def _write_excel_row(self, workbook, worksheet, first_row, last_row, row_data):
     col = -1
     body_format = workbook.add_format({
+      'font_name': 'Arial',
       'font_size': 9,
       'align': 'left',
       'valign': 'vcenter',
@@ -115,6 +122,7 @@ class PedidosEnviados:
   def _write_excel_header(self, workbook, worksheet, row_data):
     header_format = workbook.add_format({
       'bold': True,
+      'font_name': 'Arial',
       'font_size': 9,
       'bg_color': '#b7e1cd',
       'align': 'center',
