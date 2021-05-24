@@ -31,7 +31,7 @@ class Declaracao:
   def pedido_mapper(self, pedido):
     today = datetime.today()
     shipping_address = pedido['shipping_address']
-    shipping_line = pedido['shipping_lines'][0]
+    shipping_line = pedido['shipping_lines'][0] if pedido['shipping_lines'] else {}
     line_items = pedido['line_items']
 
     itm_lines = [{
@@ -52,7 +52,7 @@ class Declaracao:
       'shp_province': shipping_address['province_code'],
       'shp_zip': shipping_address['zip'],
       'shp_doc': '',
-      'shp_method': shipping_line['title'],
+      'shp_method': shipping_line.get('title', '_'*10),
 
       'itm_lines': itm_lines,
 

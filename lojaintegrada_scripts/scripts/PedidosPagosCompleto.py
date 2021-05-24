@@ -215,7 +215,6 @@ class PedidosPagosCompleto:
       'Cliente': cliente['nome'],
       'Pedido': pedido['numero'],
 
-      # 'Situação': pedido['situacao']['nome'],
       'Liberação do Pagamento': detalhe_pagamento.get('liberacao_pagamento', ''),
 
       'Pagamento': f"{pagamento['forma_pagamento']['codigo']} - {pagamento['forma_pagamento']['nome']}",
@@ -241,6 +240,7 @@ class PedidosPagosCompleto:
       'Taxas': to_money(detalhe_pagamento.get('taxas', '')),
       'Total Líquido': to_money(total_liquido),    
       # 'Lucro Bruto': to_money(lucro_bruto),
+      'Situação': pedido['situacao']['nome'],
     }
 
   def send_mail(self, detalhado_file_path:str, itens_file_path:str):
