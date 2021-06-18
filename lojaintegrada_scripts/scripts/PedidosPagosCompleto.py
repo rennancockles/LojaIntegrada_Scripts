@@ -60,108 +60,10 @@ class PedidosPagosCompleto:
     logger.info(f"Total {to_money(total)}")
     return { 'detalhado': pedidosDetalhados, 'itens': pedidosItens }
 
-  def pedido_mapper(self, pedido):
-    cliente = pedido['cliente']
-    envio = pedido['envios'][0]
-    pagamento = pedido['pagamentos'][0]
-    detalhe_pagamento = pedido['detalhe_pagamento']
-    itens = pedido['itens']
-
-    disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
-    custo = sum(map(lambda item: float(item['preco_custo'] or 0), pedido['itens']))
-
-    rastreio = envio['objeto']
-    data_envio = ''
-    if rastreio:
-      track_json = Envio.track(rastreio)
-      data_envio = track_json.get('objeto', [{}])[0].get('evento', [{}])[0].get('dataPostagem', '')
-
-    cupom = ''
-    if pedido['cupom_desconto'] is not None:
-      cupom = pedido['cupom_desconto'].get('codigo', '')
-
-    cep = pedido['endereco_entrega']['cep']
-    if cep:
-      cep = f'{cep[:5]}-{cep[5:]}'
-
-    total_liquido = detalhe_pagamento.get('total_liquido', '')
-    lucro_bruto = ''
-    if total_liquido:
-      total_liquido = float(total_liquido)
-      lucro_bruto = total_liquido - custo
-
-    return {
-      'Data': pedido['data_leitura'].strftime('%d/%m/%Y'),
-      'Cliente': cliente['nome'],
-      'Pedido': pedido['numero'],
-      'Prazo de Envio': add_util_days(pedido['data_leitura'], disponibilidade).strftime('%d/%m/%Y'),
-
-      'Itens': [{
-        'SKU': it['sku'], 
-        'Itens': it['nome'], 
-        'QTD': float(it['quantidade']),
-        'Fornecedor': '',
-        'Custo Real': '',
-        'Custo Site': to_money(it['preco_custo']),
-        'Preço Vendido': to_money(it['preco_venda'])} 
-        for it in itens],
-
-      'Situação': pedido['situacao']['nome'],
-      'Liberação do Pagamento': detalhe_pagamento.get('liberacao_pagamento', ''),
-
-      'Pagamento': f"{pagamento['forma_pagamento']['codigo']} - {pagamento['forma_pagamento']['nome']}",
-      'Código': pagamento['transacao_id'],
-      'Parcelas': pagamento['parcelamento'].get('numero_parcelas', 0),
-      'Cupom': cupom,
-
-      'Data Envio': data_envio,
-      'Rastreio': rastreio,
-      'Frete Real': '',
-
-      # 'Disponibilidade': disponibilidade,
-      'Prazo de Frete': int(envio['prazo']) - disponibilidade,
-      'Envio': f"{envio['forma_envio']['nome']} - {envio['forma_envio']['tipo']}",
-      'CEP': cep,
-      'Estado': pedido['endereco_entrega']['estado'],
-
-      'Subtotal': to_money(pedido['valor_subtotal']),
-      'Desconto': to_money(pedido['valor_desconto']),
-      'Frete': to_money(pedido['valor_envio']),
-      'Total': to_money(pedido['valor_total']),
-      'Taxas': to_money(detalhe_pagamento.get('taxas', '')),
-      'Total Líquido': to_money(total_liquido),    
-      # 'Lucro Bruto': to_money(lucro_bruto),
-    }
-
   def pedido_itens_mapper(self, pedido):
     cliente = pedido['cliente']
-    envio = pedido['envios'][0]
-    pagamento = pedido['pagamentos'][0]
-    detalhe_pagamento = pedido['detalhe_pagamento']
     itens = pedido['itens']
-
     disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
-    custo = sum(map(lambda item: float(item['preco_custo'] or 0), pedido['itens']))
-
-    rastreio = envio['objeto']
-    data_envio = ''
-    if rastreio:
-      track_json = Envio.track(rastreio)
-      data_envio = track_json.get('objeto', [{}])[0].get('evento', [{}])[0].get('dataPostagem', '')
-
-    cupom = ''
-    if pedido['cupom_desconto'] is not None:
-      cupom = pedido['cupom_desconto'].get('codigo', '')
-
-    cep = pedido['endereco_entrega']['cep']
-    if cep:
-      cep = f'{cep[:5]}-{cep[5:]}'
-
-    total_liquido = detalhe_pagamento.get('total_liquido', '')
-    lucro_bruto = ''
-    if total_liquido:
-      total_liquido = float(total_liquido)
-      lucro_bruto = total_liquido - custo
 
     return {
       'Data': pedido['data_leitura'].strftime('%d/%m/%Y'),
@@ -185,10 +87,8 @@ class PedidosPagosCompleto:
     envio = pedido['envios'][0]
     pagamento = pedido['pagamentos'][0]
     detalhe_pagamento = pedido['detalhe_pagamento']
-    itens = pedido['itens']
 
     disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
-    custo = sum(map(lambda item: float(item['preco_custo'] or 0), pedido['itens']))
 
     rastreio = envio['objeto']
     data_envio = ''
@@ -205,10 +105,6 @@ class PedidosPagosCompleto:
       cep = f'{cep[:5]}-{cep[5:]}'
 
     total_liquido = detalhe_pagamento.get('total_liquido', '')
-    lucro_bruto = ''
-    if total_liquido:
-      total_liquido = float(total_liquido)
-      lucro_bruto = total_liquido - custo
 
     return {
       'Data': pedido['data_leitura'].strftime('%d/%m/%Y'),
@@ -228,7 +124,6 @@ class PedidosPagosCompleto:
       'Frete Real': '',
       'Frete': to_money(pedido['valor_envio']),
 
-      # 'Disponibilidade': disponibilidade,
       'Prazo de Frete': int(envio['prazo']) - disponibilidade,
       'Envio': f"{envio['forma_envio']['nome']} - {envio['forma_envio']['tipo']}",
       'CEP': cep,
@@ -239,7 +134,6 @@ class PedidosPagosCompleto:
       'Total': to_money(pedido['valor_total']),
       'Taxas': to_money(detalhe_pagamento.get('taxas', '')),
       'Total Líquido': to_money(total_liquido),    
-      # 'Lucro Bruto': to_money(lucro_bruto),
       'Situação': pedido['situacao']['nome'],
     }
 
