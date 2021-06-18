@@ -45,7 +45,7 @@ class PedidosEnviados:
 
     if 'entregue' in mapped['descricao'].lower():
       # atualiza o status do pedido na loja integrada
-      pass
+      mapped['obs'] = 'Entregue' if not self._is_devolucao(pedido['rastreio']) else 'Devolvido'
 
     return mapped
 
@@ -61,6 +61,7 @@ class PedidosEnviados:
       'data_postagem': last_event.get('dataPostagem', ''),
       'objeto': pedido['envios'][0]['objeto'],
       'data': last_event.get('data', ''),
+      'obs': '',
       'descricao': last_event.get('descricao', ''),
     }
 
@@ -136,3 +137,8 @@ class PedidosEnviados:
 
     for i, header in enumerate(headers):
       worksheet.write(row, i, header, header_format)
+
+  def _is_devolucao(self, rastreio):
+    eventos = rastreio['objeto'][0]['evento']
+    devolvido = ['devolvido' in evento.get('detalhe', '').lower() for evento in eventos]
+    return any(devolvido)
