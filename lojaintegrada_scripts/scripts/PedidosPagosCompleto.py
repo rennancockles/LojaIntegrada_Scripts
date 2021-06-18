@@ -68,7 +68,7 @@ class PedidosPagosCompleto:
     itens = pedido['itens']
 
     disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
-    custo = sum(map(lambda item: float(item['preco_custo']), pedido['itens']))
+    custo = sum(map(lambda item: float(item['preco_custo'] or 0), pedido['itens']))
 
     rastreio = envio['objeto']
     data_envio = ''
@@ -141,7 +141,7 @@ class PedidosPagosCompleto:
     itens = pedido['itens']
 
     disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
-    custo = sum(map(lambda item: float(item['preco_custo']), pedido['itens']))
+    custo = sum(map(lambda item: float(item['preco_custo'] or 0), pedido['itens']))
 
     rastreio = envio['objeto']
     data_envio = ''
@@ -188,7 +188,7 @@ class PedidosPagosCompleto:
     itens = pedido['itens']
 
     disponibilidade = max(map(lambda item: int(item['disponibilidade']), pedido['itens']))
-    custo = sum(map(lambda item: float(item['preco_custo']), pedido['itens']))
+    custo = sum(map(lambda item: float(item['preco_custo'] or 0), pedido['itens']))
 
     rastreio = envio['objeto']
     data_envio = ''
