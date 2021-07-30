@@ -42,10 +42,7 @@ class PedidosEnviados:
       pedido['rastreio'] = Envio.track(codigo_rastreio)
 
     mapped = self.pedido_mapper(pedido)
-
-    if 'entregue' in mapped['descricao'].lower():
-      # atualiza o status do pedido na loja integrada
-      mapped['obs'] = 'Entregue' if not self._is_devolucao(pedido['rastreio']) else 'Devolvido'
+    mapped['obs'] = self._get_track_obs(mapped, pedido)
 
     return mapped
 
@@ -142,3 +139,18 @@ class PedidosEnviados:
     eventos = rastreio['objeto'][0]['evento']
     devolvido = ['devolvido' in evento.get('detalhe', '').lower() for evento in eventos]
     return any(devolvido)
+
+  def _get_track_obs(self, mapped, pedido):
+    descricao_lower = mapped['descricao'].lower()
+    is_devolucao = self._is_devolucao(pedido['rastreio'])
+    obs = ''
+    
+    if 'entregue' in descricao_lower:
+      # atualiza o status do pedido na loja integrada
+      obs = 'Entregue' if not is_devolucao else 'Devolvido'
+    elif 'aguardando retirada' in descricao_lower:
+      obs = 'Retirada Cliente' if not is_devolucao else 'Retirada Remetente'
+    elif is_devolucao:
+      obs = 'Retornando'
+
+    return obs
