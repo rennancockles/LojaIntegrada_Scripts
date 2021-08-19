@@ -146,8 +146,11 @@ class PedidosEnviados:
     obs = ''
     
     if 'entregue' in descricao_lower:
-      # atualiza o status do pedido na loja integrada
-      obs = 'Entregue' if not is_devolucao else 'Devolvido'
+      if is_devolucao:
+        obs = 'Devolvido'
+      else:
+        nova_situacao = self.plataforma.update_situacao_pedido(mapped['pedido'], 'pedido_entregue')
+        obs = 'Entregue (*)' if nova_situacao['codigo'] == 'pedido_entregue' else 'Entregue'
     elif 'aguardando retirada' in descricao_lower:
       obs = 'Retirada Cliente' if not is_devolucao else 'Retirada Remetente'
     elif is_devolucao:
