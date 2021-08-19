@@ -124,7 +124,7 @@ class PedidosPagosCompleto:
       'Frete Real': '',
       'Frete': to_money(pedido['valor_envio']),
 
-      'Prazo de Frete': int(envio['prazo']) - disponibilidade,
+      'Prazo de Frete': int(envio.get('prazo') or disponibilidade) - disponibilidade,
       'Envio': f"{envio['forma_envio']['nome']} - {envio['forma_envio']['tipo']}",
       'CEP': cep,
       'Estado': pedido['endereco_entrega']['estado'],
