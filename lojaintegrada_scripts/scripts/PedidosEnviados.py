@@ -33,7 +33,7 @@ class PedidosEnviados:
 
   def check_pedido(self, numero:int):
     logger.debug(f'Executando pedido {numero}')
-    
+
     pedido = self.plataforma.get_pedido_info(numero)
     pedido['rastreio'] = {}
     codigo_rastreio = pedido['envios'][0]['objeto']
@@ -46,7 +46,7 @@ class PedidosEnviados:
 
     return mapped
 
-  def pedido_mapper(self, pedido):    
+  def pedido_mapper(self, pedido):
     last_event = pedido['rastreio'].get('objeto', [{}])[0].get('evento', [{}])[0]
     cep_destino = last_event.get('cepDestino', '')
     if cep_destino:
@@ -112,7 +112,7 @@ class PedidosEnviados:
             worksheet.write(first_row + i, sub_col, item, body_format)
         col = sub_col
       else:
-        if first_row == last_row: 
+        if first_row == last_row:
           worksheet.write(first_row, col, value, body_format)
         else:
           worksheet.merge_range(first_row, col, last_row, col, value, body_format)
@@ -141,11 +141,14 @@ class PedidosEnviados:
     return any(devolvido)
 
   def _get_track_obs(self, mapped, pedido):
+    if not pedido['rastreio']:
+      return ''
+
     descricao_lower = mapped['descricao'].lower()
     is_devolucao = self._is_devolucao(pedido['rastreio'])
     obs = ''
-    
-    if 'entregue' in descricao_lower:
+
+    if 'objeto entregue' in descricao_lower and ' não ' not in descricao_lower and ' nao ' not in descricao_lower:
       if is_devolucao:
         obs = 'Devolvido'
       else:
