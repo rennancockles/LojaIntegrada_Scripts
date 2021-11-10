@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import xlsxwriter
 from datetime import date
 from os import path
 
-from pagamentos import Pagamento
+import xlsxwriter
 from envios import Envio
+from helpers import add_util_days, mailer, to_money
+from pagamentos import Pagamento
 from plataformas import PlataformaABC
-from helpers import add_util_days, to_money, mailer
 
 logger = logging.getLogger(__name__)
 CWD = path.dirname(path.abspath(__file__))
@@ -27,7 +27,7 @@ class PedidosPagosCompleto:
 
     pedidosDetalhados = []
     pedidosItens = []
-      
+
     for data in self.datas:
       logger.info(f'executando para a data {data}')
       atualizacoes_pedidos_pagos = atualizacoes.get(str(data), {}).get('pedido_pago', [])
@@ -49,14 +49,14 @@ class PedidosPagosCompleto:
 
     for atualizacao in sorted(atualizacoes_pedidos_pagos, key=lambda at: at['numero']):
       pedido = self.plataforma.get_pedido_info(atualizacao['numero'])
-      total += float(pedido['valor_total']) 
+      total += float(pedido['valor_total'])
       pedido['data_leitura'] = data
-      pedido['detalhe_pagamento'] = Pagamento.consulta_detalhe_transacao(forma_pagamento=pedido['pagamentos'][0]['forma_pagamento']['codigo'], transacao_id=pedido['pagamentos'][0]['transacao_id'])
+      pedido['detalhe_pagamento'] = Pagamento.consulta_detalhe_transacao(pagamento=pedido['pagamentos'][0], data=data)
       logger.debug(f"Pedido {pedido['numero']} => {to_money(pedido['valor_total'])}")
-      
+
       pedidosDetalhados.append(self.pedido_detalhado_mapper(pedido))
       pedidosItens.append(self.pedido_itens_mapper(pedido))
-    
+
     logger.info(f"Total {to_money(total)}")
     return { 'detalhado': pedidosDetalhados, 'itens': pedidosItens }
 
@@ -72,13 +72,13 @@ class PedidosPagosCompleto:
       'Prazo de Envio': add_util_days(pedido['data_leitura'], disponibilidade).strftime('%d/%m/%Y'),
 
       'Itens': [{
-        'SKU': it['sku'], 
-        'Itens': it['nome'], 
+        'SKU': it['sku'],
+        'Itens': it['nome'],
         'QTD': float(it['quantidade']),
         'Fornecedor': '',
         'Custo Real': '',
         'Custo Site': to_money(it['preco_custo']),
-        'Preço Vendido': to_money(it['preco_venda'])} 
+        'Preço Vendido': to_money(it['preco_venda'])}
         for it in itens],
     }
 
@@ -133,7 +133,7 @@ class PedidosPagosCompleto:
       'Desconto': to_money(pedido['valor_desconto']),
       'Total': to_money(pedido['valor_total']),
       'Taxas': to_money(detalhe_pagamento.get('taxas', '')),
-      'Total Líquido': to_money(total_liquido),    
+      'Total Líquido': to_money(total_liquido),
       'Situação': pedido['situacao']['nome'],
     }
 
@@ -195,7 +195,7 @@ class PedidosPagosCompleto:
             worksheet.write(first_row + i, sub_col, item, body_format)
         col = sub_col
       else:
-        if first_row == last_row: 
+        if first_row == last_row:
           worksheet.write(first_row, col, value, body_format)
         else:
           worksheet.merge_range(first_row, col, last_row, col, value, body_format)
