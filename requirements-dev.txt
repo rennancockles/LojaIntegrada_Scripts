@@ -1,0 +1,20 @@
+# Linting
+black
+flake8
+isort
+mypy
+
+# # Testing
+# pytest
+# pytest-cov
+# codecov
+
+# # Documentation
+# mkdocs
+# mkdocs-material
+
+# # Packaging
+# twine
+# wheel
+
+-r requirements.txt

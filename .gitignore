@@ -1,11 +1,20 @@
-.vscode
+# Folders
 .venv
-**/tmp/*
+.vscode
+**/__pycache__
+.mypy_cache
+htmlcov
+reqs
+**/tmp
+json
 
-__pycache__
+# Files
+.env*
+!.env.example
+.coverage
+coverage.xml
 
 *.json
 *.xml
 *.csv
 *.pkl
-.env
