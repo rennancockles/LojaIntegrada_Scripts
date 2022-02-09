@@ -1,74 +1,117 @@
 # -*- coding: utf-8 -*-
 
+from typing import Optional
 from dotenv import load_dotenv
 load_dotenv()
 
-import argparse
+from enum import Enum
 import logging
-from datetime import datetime, timedelta
 
-import scripts
+import typer
+
+from scripts import declaracao, pedidosPagosCompleto, pedidosEnviados
 from plataformas import Plataforma
-from helpers import date_range
+from helpers import format_dates
 
 logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
+app = typer.Typer(
+    name="lojaintegrada_scripts",
+    help="Scripts para manipular dados da Loja Integrada.",
+)
 
 
-def parse_args():
-  parser = argparse.ArgumentParser(prog='lojaintegrada_scripts', description='Scripts para manipular dados da Loja Integrada.')
-  parser.add_argument('--data', '-d', help='Data no formado %d/%m/%Y')
-  parser.add_argument('--range', '-r', nargs=2, help='Range de datas no formado %d/%m/%Y')
-  parser.add_argument('--script', '-s', help='Script para ser executado', required=True)
-  parser.add_argument("--mail_to", '-m', nargs="+", help="Lista de destinatários para enviar email")
-  parser.add_argument("--pedido", '-p', help="Id do pedido")
-
-  parser.add_argument("--log", '-l', help="Nível de verbosidade do log", 
-                                     default='INFO', 
-                                     choices=['debug', 'info', 'warning', 'error', 'critical'])
-
-  return parser.parse_args()
+class LogLevel(str, Enum):
+    debug = "DEBUG"
+    info = "INFO"
+    warning = "WARNING"
+    error = "ERROR"
+    critical = "CRITICAL"
 
 
-def validate_args(args):
-  datas = [(datetime.today() - timedelta(days=1)).strftime('%d/%m/%Y'), None]
-  if args.range:
-    datas = args.range
-  elif args.data:
-    datas = [args.data, None]
-
-  try:
-    datas = date_range(*datas)
-  except:
-    exit("Data no formato inválido: a data deve estar no formato %d/%m/%Y\n")
-
-  try:
-    ScriptClass = getattr(scripts, args.script)
-  except:
-    exit(f"Script não encontrado: {args.script}\n")
-
-  return ScriptClass, datas
+@app.command()
+def declaracao(
+    pedido: str = typer.Option(
+        ...,
+        "--pedido",
+        "-p",
+        help="Id do pedido",
+    ),
+) -> None:
+    typer.echo("Executando script: declaracao")
+    typer.echo(f"{pedido = }")
+    declaracao(Plataforma.get_plataforma('shopify'), pedido)()
 
 
-def script_orchestrator(scriptClass, datas, args):
-  script_name = args.script.lower()
+@app.command()
+def pedidos_pagos(
+    date: Optional[str] = typer.Option(
+        None,
+        "--date",
+        "-d",
+        help="Data no formado %d/%m/%Y",
+    ),
+    range: Optional[tuple[str, str]] = typer.Option(
+        None,
+        "--range",
+        "-r",
+        help="Range de datas no formado %d/%m/%Y",
+    ),
+    mail_to: list[str] = typer.Option(
+        ...,
+        "--mail_to",
+        "-m",
+        help="Lista de destinatários para enviar email",
+    ),
+) -> None:
 
-  if script_name == 'declaracao':
-    script = scriptClass(Plataforma.get_plataforma('shopify'), args.pedido)
-  elif script_name in ['pedidospagos', 'pedidospagoscompleto']:
-    script = scriptClass(Plataforma.get_plataforma('lojaintegrada'), datas, email_to=args.mail_to)
-  elif script_name in ['pedidosenviados']:
-    script = scriptClass(Plataforma.get_plataforma('lojaintegrada'), email_to=args.mail_to)
+    typer.echo("Executando script: pedidos_pagos")
+    typer.echo(f"{date = }")
+    typer.echo(f"{range = }")
+    typer.echo(f"{mail_to = }")
 
-  script()
+    try:
+        dates = format_dates(date, range)
+    except:
+        typer.echo("Data no formato inválido: a data deve estar no formato %d/%m/%Y")
+        raise typer.Exit(code=1)
+
+    typer.echo(f"{dates = }")
+    pedidosPagosCompleto(Plataforma.get_plataforma('lojaintegrada'), dates, email_to=mail_to)()
 
 
-def main():
-  args = parse_args()
-  
-  logging.basicConfig(format='%(asctime)s - %(levelname)-8s - %(name)s - %(message)s', datefmt='%d/%m/%Y %H:%M', level=args.log.upper())
-  logger = logging.getLogger(__name__)
-  logger.debug(args)
+@app.command()
+def pedidos_enviados(
+    mail_to: list[str] = typer.Option(
+        ...,
+        "--mail_to",
+        "-m",
+        help="Lista de destinatários para enviar email",
+    ),
+) -> None:
+    typer.echo("Executando script: pedidos_enviados")
+    typer.echo(f"{mail_to = }")
+    pedidosEnviados(Plataforma.get_plataforma('lojaintegrada'), email_to=mail_to)()
 
-  ScriptClass, datas = validate_args(args)
 
-  script_orchestrator(ScriptClass, datas, args)
+@app.callback()
+def callback(
+    ctx: typer.Context,
+    log: LogLevel = typer.Option(
+        LogLevel.info,
+        "--log",
+        "-l",
+        help="Nível de verbosidade do log",
+        case_sensitive=False
+    )
+) -> None:
+    logging.basicConfig(
+      format="%(asctime)s - %(levelname)-8s - %(name)s - %(message)s",
+      datefmt="%d/%m/%Y %H:%M",
+      level=log.value
+    )
+    logger = logging.getLogger(__name__)
+    logger.info(f"Executando comando {ctx.invoked_subcommand}")
+
+
+if __name__ == "__main__":
+    app()
