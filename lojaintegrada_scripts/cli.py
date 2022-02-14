@@ -1,23 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from typing import Optional
-from dotenv import load_dotenv
-load_dotenv()
-
-from enum import Enum
 import logging
+from enum import Enum
+from typing import Optional
 
 import typer
 
-from scripts import declaracao, pedidosPagosCompleto, pedidosEnviados
-from plataformas import Plataforma
+from commands import Declaracao, PedidosEnviados, PedidosPagos
 from helpers import format_dates
+from plataformas import Plataforma
 
 logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 app = typer.Typer(
     name="lojaintegrada_scripts",
     help="Scripts para manipular dados da Loja Integrada.",
 )
+logger: logging.Logger
 
 
 class LogLevel(str, Enum):
@@ -37,9 +35,13 @@ def declaracao(
         help="Id do pedido",
     ),
 ) -> None:
-    typer.echo("Executando script: declaracao")
-    typer.echo(f"{pedido = }")
-    declaracao(Plataforma.get_plataforma('shopify'), pedido)()
+    logger.debug("Running script: declaracao")
+    logger.debug(f"{pedido = }")
+
+    script = Declaracao(
+        plataforma=Plataforma.get_plataforma("shopify"), pedido_id=int(pedido)
+    )
+    script.run()
 
 
 @app.command()
@@ -63,20 +65,22 @@ def pedidos_pagos(
         help="Lista de destinatários para enviar email",
     ),
 ) -> None:
-
-    typer.echo("Executando script: pedidos_pagos")
-    typer.echo(f"{date = }")
-    typer.echo(f"{range = }")
-    typer.echo(f"{mail_to = }")
+    logger.debug("Running script: pedidos_pagos")
+    logger.debug(f"{date = }, {range = }, {mail_to = }")
 
     try:
         dates = format_dates(date, range)
-    except:
+    except Exception as e:
+        logger.debug(f"Exception: {e}")
         typer.echo("Data no formato inválido: a data deve estar no formato %d/%m/%Y")
         raise typer.Exit(code=1)
 
-    typer.echo(f"{dates = }")
-    pedidosPagosCompleto(Plataforma.get_plataforma('lojaintegrada'), dates, email_to=mail_to)()
+    script = PedidosPagos(
+        plataforma=Plataforma.get_plataforma("lojaintegrada"),
+        datas=dates,
+        email_to=mail_to,
+    )
+    script.run()
 
 
 @app.command()
@@ -88,9 +92,13 @@ def pedidos_enviados(
         help="Lista de destinatários para enviar email",
     ),
 ) -> None:
-    typer.echo("Executando script: pedidos_enviados")
-    typer.echo(f"{mail_to = }")
-    pedidosEnviados(Plataforma.get_plataforma('lojaintegrada'), email_to=mail_to)()
+    logger.debug("Running script: pedidos_enviados")
+    logger.debug(f"{mail_to = }")
+
+    script = PedidosEnviados(
+        plataforma=Plataforma.get_plataforma("lojaintegrada"), email_to=mail_to
+    )
+    script.run()
 
 
 @app.callback()
@@ -101,13 +109,15 @@ def callback(
         "--log",
         "-l",
         help="Nível de verbosidade do log",
-        case_sensitive=False
-    )
+        case_sensitive=False,
+    ),
 ) -> None:
+    global logger
+
     logging.basicConfig(
-      format="%(asctime)s - %(levelname)-8s - %(name)s - %(message)s",
-      datefmt="%d/%m/%Y %H:%M",
-      level=log.value
+        format="%(asctime)s - %(levelname)-8s - %(name)s - %(message)s",
+        datefmt="%d/%m/%Y %H:%M",
+        level=log.value,
     )
     logger = logging.getLogger(__name__)
     logger.info(f"Executando comando {ctx.invoked_subcommand}")

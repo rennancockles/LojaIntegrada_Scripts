@@ -2,6 +2,7 @@ from datetime import datetime
 
 import requests
 import xmltodict
+
 from pagamentos import PagamentoABC
 from pagamentos.errors import InvalidCredentialError, InvalidTransactionCodeError
 

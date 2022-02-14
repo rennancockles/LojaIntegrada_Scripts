@@ -4,5 +4,5 @@ export SOURCE_FILES="lojaintegrada_scripts"
 
 set -x
 
-black $SOURCE_FILES
 isort $SOURCE_FILES
+black $SOURCE_FILES

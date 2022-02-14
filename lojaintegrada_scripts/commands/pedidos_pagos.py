@@ -5,6 +5,7 @@ from datetime import date
 from os import path
 
 import xlsxwriter
+
 from envios import Envio
 from helpers import add_util_days, mailer, to_money
 from pagamentos import Pagamento
@@ -15,19 +16,19 @@ CWD = path.dirname(path.abspath(__file__))
 TMP = path.join(CWD, "..", "tmp")
 
 
-class PedidosPagosCompleto:
+class PedidosPagos:
     def __init__(self, plataforma: PlataformaABC, datas: list[date], email_to: list):
         self.plataforma = plataforma
         self.datas = datas
         self.email_to = email_to
 
-    def __call__(self):
+    def run(self):
         logger.info(f"buscando atualizacoes entre {self.datas[0]} e {self.datas[-1]}")
         atualizacoes = self.plataforma.lista_atualizacoes_por_datas(self.datas)
         logger.info("atualizacoes obtidas com sucesso")
 
-        pedidosDetalhados = []
-        pedidosItens = []
+        pedidos_detalhados = []
+        pedidos_itens = []
 
         for data in self.datas:
             logger.info(f"executando para a data {data}")
@@ -36,22 +37,22 @@ class PedidosPagosCompleto:
             )
 
             pedidos = self.get_pedidos(atualizacoes_pedidos_pagos, data)
-            pedidosDetalhados += pedidos["detalhado"]
-            pedidosItens += pedidos["itens"]
+            pedidos_detalhados += pedidos["detalhado"]
+            pedidos_itens += pedidos["itens"]
 
-        if pedidosDetalhados:
+        if pedidos_detalhados:
             detalhado_xlsx_path = self.to_excel(
-                pedidosDetalhados, path.join(TMP, "pedidosDetalhados.xlsx")
+                pedidos_detalhados, path.join(TMP, "pedidosDetalhados.xlsx")
             )
             itens_xlsx_path = self.to_excel(
-                pedidosItens, path.join(TMP, "pedidosItens.xlsx")
+                pedidos_itens, path.join(TMP, "pedidosItens.xlsx")
             )
             self.send_mail(detalhado_xlsx_path, itens_xlsx_path)
 
     def get_pedidos(self, atualizacoes_pedidos_pagos, data: date):
         logger.info(f"{len(atualizacoes_pedidos_pagos)} pedidos pagos")
-        pedidosDetalhados = []
-        pedidosItens = []
+        pedidos_detalhados = []
+        pedidos_itens = []
         total = 0
 
         for atualizacao in sorted(
@@ -67,11 +68,11 @@ class PedidosPagosCompleto:
                 f"Pedido {pedido['numero']} => {to_money(pedido['valor_total'])}"
             )
 
-            pedidosDetalhados.append(self.pedido_detalhado_mapper(pedido))
-            pedidosItens.append(self.pedido_itens_mapper(pedido))
+            pedidos_detalhados.append(self.pedido_detalhado_mapper(pedido))
+            pedidos_itens.append(self.pedido_itens_mapper(pedido))
 
         logger.info(f"Total {to_money(total)}")
-        return {"detalhado": pedidosDetalhados, "itens": pedidosItens}
+        return {"detalhado": pedidos_detalhados, "itens": pedidos_itens}
 
     def pedido_itens_mapper(self, pedido):
         cliente = pedido["cliente"]
@@ -140,7 +141,10 @@ class PedidosPagosCompleto:
             "Cliente": cliente["nome"],
             "Pedido": pedido["numero"],
             "Liberação do Pagamento": detalhe_pagamento.get("liberacao_pagamento", ""),
-            "Pagamento": f"{pagamento['forma_pagamento']['codigo']} - {pagamento['forma_pagamento']['nome']}",
+            "Pagamento": (
+                f"{pagamento['forma_pagamento']['codigo']} - "
+                f"{pagamento['forma_pagamento']['nome']}"
+            ),
             "Código": pagamento["transacao_id"],
             "Parcelas": pagamento["parcelamento"].get("numero_parcelas", 0),
             "Cupom": cupom,

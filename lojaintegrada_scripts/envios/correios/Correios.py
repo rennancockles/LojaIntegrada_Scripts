@@ -5,109 +5,109 @@ import requests
 from envios import EnvioABC
 
 
-# Manual PDF: https://www.correios.com.br/a-a-z/pdf/rastreamento-de-objetos/manual_rastreamentoobjetosws.pdf
+# Manual PDF: https://www.correios.com.br/a-a-z/pdf/rastreamento-de-objetos/manual_rastreamentoobjetosws.pdf  # noqa: E501
 class Objeto(object):
-  def __init__(self, *args, **kwargs):
-    self.cepDestino = ""
-    self.dataPostagem = ""
-    self.eventos = list()
-    self.numero = kwargs.get('numero', '')
-    self.categoria = kwargs.get('categoria', '')
-    self.sigla = kwargs.get('sigla', '')
-    self.nome = kwargs.get('nome', '')
-    self.json = ""
+    def __init__(self, *args, **kwargs):
+        self.cepDestino = ""
+        self.dataPostagem = ""
+        self.eventos = list()
+        self.numero = kwargs.get("numero", "")
+        self.categoria = kwargs.get("categoria", "")
+        self.sigla = kwargs.get("sigla", "")
+        self.nome = kwargs.get("nome", "")
+        self.json = ""
 
-    if 'evento' in kwargs and len(kwargs.get('evento', list())) > 0:
-      evento = kwargs.get('evento')[0]
-      self.cepDestino = evento.get('cepDestino', '')
-      self.dataPostagem = evento.get('dataPostagem', '')
+        if "evento" in kwargs and len(kwargs.get("evento", list())) > 0:
+            evento = kwargs.get("evento")[0]
+            self.cepDestino = evento.get("cepDestino", "")
+            self.dataPostagem = evento.get("dataPostagem", "")
 
-      for evento in kwargs.get('evento', list()):
-        self.eventos.append(Evento(**evento))
+            for evento in kwargs.get("evento", list()):
+                self.eventos.append(Evento(**evento))
 
-      # if cep != "":
-      #     self.cepDestino = cep[:-3] + '-' + cep[-3:]
-      # if data != "":
-      #     self.dataPostagem = datetime.strptime(data, "%d/%m/%Y")
+            # if cep != "":
+            #     self.cepDestino = cep[:-3] + '-' + cep[-3:]
+            # if data != "":
+            #     self.dataPostagem = datetime.strptime(data, "%d/%m/%Y")
 
 
 class Evento(object):
-  def __init__(self, *args, **kwargs):
-    self.tipo = kwargs.get('tipo', '')
-    self.data = kwargs.get('data', '')
-    self.hora = kwargs.get('hora', '')
-    self.criacao = kwargs.get('criacao', '')
-    self.prazoGuarda = kwargs.get('prazoGuarda', '')
-    self.diasUteis = kwargs.get('diasUteis', '')
-    self.descricao = kwargs.get('descricao', '')
-    self.detalhe = kwargs.get('detalhe', '')
-    self.status = kwargs.get('status', '')
+    def __init__(self, *args, **kwargs):
+        self.tipo = kwargs.get("tipo", "")
+        self.data = kwargs.get("data", "")
+        self.hora = kwargs.get("hora", "")
+        self.criacao = kwargs.get("criacao", "")
+        self.prazoGuarda = kwargs.get("prazoGuarda", "")
+        self.diasUteis = kwargs.get("diasUteis", "")
+        self.descricao = kwargs.get("descricao", "")
+        self.detalhe = kwargs.get("detalhe", "")
+        self.status = kwargs.get("status", "")
 
-    if 'unidade' in kwargs:
-      self.unidade = Unidade(**kwargs.get('unidade', dict()))
+        if "unidade" in kwargs:
+            self.unidade = Unidade(**kwargs.get("unidade", dict()))
 
-    if 'destino' in kwargs and len(kwargs.get('destino', list())) > 0:
-      self.destino = Destino(**kwargs.get('destino')[0])
+        if "destino" in kwargs and len(kwargs.get("destino", list())) > 0:
+            self.destino = Destino(**kwargs.get("destino")[0])
 
-    if 'detalheOEC' in kwargs:
-      self.detalheOEC = OEC(**kwargs.get('detalheOEC', dict()))
+        if "detalheOEC" in kwargs:
+            self.detalheOEC = OEC(**kwargs.get("detalheOEC", dict()))
 
 
 class Unidade(object):
-  def __init__(self, *args, **kwargs):
-    self.tipounidade = kwargs.get('tipounidade', '')
-    self.local = kwargs.get('local', '')
-    self.sto = kwargs.get('sto', '')
-    self.codigo = kwargs.get('codigo', '')
-    self.uf = kwargs.get('uf', '')
-    self.cidade = kwargs.get('cidade', '')
+    def __init__(self, *args, **kwargs):
+        self.tipounidade = kwargs.get("tipounidade", "")
+        self.local = kwargs.get("local", "")
+        self.sto = kwargs.get("sto", "")
+        self.codigo = kwargs.get("codigo", "")
+        self.uf = kwargs.get("uf", "")
+        self.cidade = kwargs.get("cidade", "")
 
-    if 'endereco' in kwargs:
-      self.endereco = Endereco(**kwargs.get('endereco', dict()))
+        if "endereco" in kwargs:
+            self.endereco = Endereco(**kwargs.get("endereco", dict()))
 
 
 class Endereco(object):
-  def __init__(self, *args, **kwargs):
-    self.numero = kwargs.get('numero', '')
-    self.cep = kwargs.get('cep', '')
-    self.localidade = kwargs.get('localidade', '')
-    self.bairro = kwargs.get('bairro', '')
-    self.codigo = kwargs.get('codigo', '')
-    self.logradouro = kwargs.get('logradouro', '')
-    self.uf = kwargs.get('uf', '')
-    self.latitude = kwargs.get('latitude', '')
-    self.longitude = kwargs.get('longitude', '')
+    def __init__(self, *args, **kwargs):
+        self.numero = kwargs.get("numero", "")
+        self.cep = kwargs.get("cep", "")
+        self.localidade = kwargs.get("localidade", "")
+        self.bairro = kwargs.get("bairro", "")
+        self.codigo = kwargs.get("codigo", "")
+        self.logradouro = kwargs.get("logradouro", "")
+        self.uf = kwargs.get("uf", "")
+        self.latitude = kwargs.get("latitude", "")
+        self.longitude = kwargs.get("longitude", "")
 
 
 class Destino(object):
-  def __init__(self, *args, **kwargs):
-    self.bairro = kwargs.get('bairro', '')
-    self.local = kwargs.get('local', '')
-    self.cidade = kwargs.get('cidade', '')
-    self.uf = kwargs.get('uf', '')
-    self.codigo = kwargs.get('codigo', '')
+    def __init__(self, *args, **kwargs):
+        self.bairro = kwargs.get("bairro", "")
+        self.local = kwargs.get("local", "")
+        self.cidade = kwargs.get("cidade", "")
+        self.uf = kwargs.get("uf", "")
+        self.codigo = kwargs.get("codigo", "")
 
-    if 'endereco' in kwargs:
-      self.endereco = Endereco(**kwargs.get('endereco', dict()))
+        if "endereco" in kwargs:
+            self.endereco = Endereco(**kwargs.get("endereco", dict()))
 
 
 class OEC(object):
-  def __init__(self, *args, **kwargs):
-    self.lista = kwargs.get('lista', '')
-    self.longitude = kwargs.get('longitude', '')
-    self.latitude = kwargs.get('latitude', '')
-    self.carteiro = kwargs.get('carteiro', '')
-    self.distrito = kwargs.get('distrito', '')
-    self.unidade = kwargs.get('unidade', '')
+    def __init__(self, *args, **kwargs):
+        self.lista = kwargs.get("lista", "")
+        self.longitude = kwargs.get("longitude", "")
+        self.latitude = kwargs.get("latitude", "")
+        self.carteiro = kwargs.get("carteiro", "")
+        self.distrito = kwargs.get("distrito", "")
+        self.unidade = kwargs.get("unidade", "")
 
-    if 'endereco' in kwargs:
-      self.endereco = Endereco(**kwargs.get('endereco', dict()))
+        if "endereco" in kwargs:
+            self.endereco = Endereco(**kwargs.get("endereco", dict()))
 
 
 class Correios(EnvioABC):
-  @staticmethod
-  def track(codigo):
-    body = f'''
+    @staticmethod
+    def track(codigo):
+        body = f"""
     <rastroObjeto>
       <usuario>MobileXect</usuario>
       <senha>DRW0#9F$@0</senha>
@@ -117,18 +117,22 @@ class Correios(EnvioABC):
       <lingua>101</lingua>
       <token>QTXFMvu_Z-6XYezP3VbDsKBgSeljSqIysM9x</token>
     </rastroObjeto>
-    '''
+    """
 
-    r = requests.post('http://webservice.correios.com.br/service/rest/rastro/rastroMobile', data=body, headers={'Content-Type': 'application/xml'})
+        r = requests.post(
+            "http://webservice.correios.com.br/service/rest/rastro/rastroMobile",
+            data=body,
+            headers={"Content-Type": "application/xml"},
+        )
 
-    if r.status_code == 200:
-      result = r.json().get('objeto', list())
-      if result:
-        objeto = Objeto(**result[0])
-        objeto.json = r.json()
-        return objeto.json
+        if r.status_code == 200:
+            result = r.json().get("objeto", list())
+            if result:
+                objeto = Objeto(**result[0])
+                objeto.json = r.json()
+                return objeto.json
 
-    return None
+        return None
 
 
 # def geraCodValido(cod, withCep=False):

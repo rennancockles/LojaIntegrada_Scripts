@@ -1,2 +1,2 @@
-from .PagamentoABC import PagamentoABC
 from .Pagamento import Pagamento
+from .PagamentoABC import PagamentoABC

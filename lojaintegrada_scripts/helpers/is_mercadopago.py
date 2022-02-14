@@ -1,2 +1,2 @@
-def is_mercadopago(codigo:str) -> bool:
-  return codigo in ['mercadopagov1']
+def is_mercadopago(codigo: str) -> bool:
+    return codigo in ["mercadopagov1"]

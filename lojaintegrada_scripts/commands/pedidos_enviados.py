@@ -5,6 +5,7 @@ from os import path
 from typing import Any
 
 import xlsxwriter
+
 from envios import Envio
 from helpers import mailer
 from plataformas import PlataformaABC
@@ -19,8 +20,8 @@ class PedidosEnviados:
         self.plataforma = plataforma
         self.email_to = email_to
 
-    def __call__(self):
-        logger.info(f"buscando pedidos enviados")
+    def run(self):
+        logger.info("buscando pedidos enviados")
         pedidos_enviados = self.plataforma.lista_pedidos_enviados()
         logger.info("pedidos obtidos com sucesso")
 
@@ -70,8 +71,8 @@ class PedidosEnviados:
             logger.error("Email não enviado")
             return
 
-        subject = f"Atualização de pedidos enviados"
-        body = f"Bom dia \n\nsegue em anexo o resumo de pedidos enviados"
+        subject = "Atualização de pedidos enviados"
+        body = "Bom dia \n\nsegue em anexo o resumo de pedidos enviados"
         files_to_send = [{"name": "Pedidos Enviados", "file": file_path}]
 
         mailer.send(

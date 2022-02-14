@@ -1,1 +1,3 @@
-from lojaintegrada import LojaIntegrada
+from dotenv import load_dotenv
+
+load_dotenv()
