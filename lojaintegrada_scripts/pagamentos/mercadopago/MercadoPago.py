@@ -2,8 +2,8 @@ from datetime import datetime
 
 import requests
 
-from pagamentos import PagamentoABC
 from pagamentos.errors import InvalidTransactionCodeError
+from pagamentos.PagamentoABC import PagamentoABC
 
 
 # docs: https://developers.mercadolivre.com.br/pt_br/gerenciamento-de-pagamentos

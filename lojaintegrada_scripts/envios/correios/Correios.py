@@ -2,7 +2,7 @@
 
 import requests
 
-from envios import EnvioABC
+from envios.EnvioABC import EnvioABC
 
 
 # Manual PDF: https://www.correios.com.br/a-a-z/pdf/rastreamento-de-objetos/manual_rastreamentoobjetosws.pdf  # noqa: E501

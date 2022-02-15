@@ -1,5 +1,5 @@
-from pagamentos import PagamentoABC
 from pagamentos.errors import InvalidTransactionCodeError
+from pagamentos.PagamentoABC import PagamentoABC
 
 
 class Pagali(PagamentoABC):

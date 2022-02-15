@@ -5,10 +5,13 @@ from enum import Enum
 from typing import Optional
 
 import typer
+from dotenv import load_dotenv
 
-from commands import Declaracao, PedidosEnviados, PedidosPagos
-from helpers import format_dates
-from plataformas import Plataforma
+load_dotenv()
+
+from commands import Declaracao, PedidosEnviados, PedidosPagos  # noqa: E402
+from helpers import format_dates  # noqa: E402
+from plataformas import Plataforma  # noqa: E402
 
 logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 app = typer.Typer(

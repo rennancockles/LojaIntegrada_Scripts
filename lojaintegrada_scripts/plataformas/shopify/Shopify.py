@@ -1,7 +1,7 @@
 import requests
 
-from plataformas import PlataformaABC
 from plataformas.errors import ResponseError
+from plataformas.PlataformaABC import PlataformaABC
 
 
 class Shopify(PlataformaABC):
