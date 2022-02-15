@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -32,10 +32,11 @@ jobs:
           host: ${{secrets.SSH_HOST}}
           key: ${{secrets.SSH_KEY}}
           username: ${{secrets.SSH_USER}}
-          
+
           script: |
             cd repos/LojaIntegrada_Scripts
             git pull
             . .venv/bin/activate
-            pip install requirements.txt
+            pip install -r requirements.txt
             echo 'Deployment succesful to digital ocean'
+            deactivate
