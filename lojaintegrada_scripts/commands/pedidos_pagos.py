@@ -96,7 +96,7 @@ class PedidosPagos:
                     "Fornecedor": "",
                     "Custo Real": "",
                     "Custo Site": to_money(
-                        float(it["quantidade"]) * float(it["preco_custo"])
+                        float(it["quantidade"]) * float(it["preco_custo"] or "0")
                     ),
                     "Preço Vendido": to_money(
                         float(it["quantidade"]) * float(it["preco_venda"])
