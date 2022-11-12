@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from commands import Declaracao, PedidosEnviados, PedidosPagos  # noqa: E402
+from commands import Declaracao, PedidosEnviados, PedidosPagos, TotalPago  # noqa: E402
 from helpers import format_dates  # noqa: E402
 from plataformas import Plataforma  # noqa: E402
 
@@ -82,6 +82,38 @@ def pedidos_pagos(
         plataforma=Plataforma.get_plataforma("lojaintegrada"),
         datas=dates,
         email_to=mail_to,
+    )
+    script.run()
+
+
+@app.command()
+def total_pago(
+    date: Optional[str] = typer.Option(
+        None,
+        "--date",
+        "-d",
+        help="Data no formado %d/%m/%Y",
+    ),
+    range: Optional[tuple[str, str]] = typer.Option(
+        None,
+        "--range",
+        "-r",
+        help="Range de datas no formado %d/%m/%Y",
+    ),
+) -> None:
+    logger.debug("Running script: total_pago")
+    logger.debug(f"{date = }, {range = }")
+
+    try:
+        dates = format_dates(date, range, delta=0)
+    except Exception as e:
+        logger.debug(f"Exception: {e}")
+        typer.echo("Data no formato inválido: a data deve estar no formato %d/%m/%Y")
+        raise typer.Exit(code=1)
+
+    script = TotalPago(
+        plataforma=Plataforma.get_plataforma("lojaintegrada"),
+        datas=dates,
     )
     script.run()
 
